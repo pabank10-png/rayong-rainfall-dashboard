@@ -153,6 +153,8 @@
   td.hi{color:#34d399;font-weight:700;}td.lo{color:#fb7185;font-weight:600;}
   .zero-cell{color:#334155!important;}
   tr.total-row td{padding-top:7px;padding-bottom:7px;font-size:12px;font-weight:700;border-top:2px solid #334155;}
+  .source-footer{max-width:1200px;margin:0 auto;padding:0 20px 28px;color:#64748b;font-size:11px;text-align:center;line-height:1.6;}
+  .source-footer a{color:#7dd3fc;text-decoration:none;}
   .chart-scroll{height:320px;position:relative;}
   .chart-fallback{display:none;color:#94a3b8;text-align:center;padding:28px 12px;font-size:13px;}
   @media(max-width:640px){
@@ -248,6 +250,10 @@
     </div>
   </div>
 </div>
+
+<footer class="source-footer">
+  Data source: Hydro-Informatics Institute (HII) / TISERVICE, mRainAmp_TISERVICE (MEAN_OBS). Dashboard visualization generated from public rainfall API data.
+</footer>
 
 <script src="/static/libraries/chart.js/4.5.1/chart.umd.js"></script>
 <script>if(!window.Chart){
