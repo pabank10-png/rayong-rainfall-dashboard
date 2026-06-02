@@ -203,7 +203,7 @@
   }
   @media(max-width:480px) and (orientation:portrait){
     .chart-card.full{overflow-x:hidden;}
-    .chart-scroll{height:240px;min-width:0;width:100%;}
+    .chart-scroll{height:270px;min-width:0;width:100%;}
     .table-wrap{max-height:none;overflow-x:hidden;}
     table{min-width:0;width:100%;table-layout:fixed;font-size:9.5px;}
     th{padding:5px 3px;font-size:9px;letter-spacing:0;}
@@ -570,14 +570,18 @@ function chartReady(){
   if(fb)fb.style.display='block';
   return false;
 }
+function isPhonePortrait(){return window.matchMedia('(max-width:480px) and (orientation:portrait)').matches;}
+function yTickLabel(v){return isPhonePortrait()?`${v} มม.`:`${v} มม./เดือน`;}
+function chartLayout(){return isPhonePortrait()?{padding:{left:8,right:4,top:4,bottom:0}}:{};}
+function chartTickFont(){return isPhonePortrait()?{size:10}:{size:12};}
 function renderBarChart(resolved){
   if(!chartReady())return;
   if(mainChartInst)mainChartInst.destroy();
   const ctx=document.getElementById('mainChart').getContext('2d');
   mainChartInst=new Chart(ctx,{type:'bar',data:{labels:MONTHS,datasets:resolved.map((r,i)=>({label:r.shortLabel,data:r.data.map(v=>v||0),backgroundColor:SLOT_COLORS[i]+'88',borderColor:SLOT_COLORS[i],borderWidth:1.5,borderRadius:4}))},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{labels:{color:'#94a3b8',font:{size:12}}},tooltip:{backgroundColor:'#1e293b',borderColor:'#334155',borderWidth:1,titleColor:'#f1f5f9',bodyColor:'#cbd5e1',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)} มม./เดือน`}}},
-      scales:{x:{ticks:{color:'#94a3b8'},grid:{color:'#1e293b'}},y:{ticks:{color:'#94a3b8',callback:v=>v+' มม./เดือน'},grid:{color:'#334155'},title:{display:true,text:'มม./เดือน',color:'#64748b'},min:0}}}});
+    options:{responsive:true,maintainAspectRatio:false,layout:chartLayout(),interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{color:'#94a3b8',font:chartTickFont()}},tooltip:{backgroundColor:'#1e293b',borderColor:'#334155',borderWidth:1,titleColor:'#f1f5f9',bodyColor:'#cbd5e1',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)} มม./เดือน`}}},
+      scales:{x:{ticks:{color:'#94a3b8',font:chartTickFont(),maxRotation:isPhonePortrait()?45:50,minRotation:isPhonePortrait()?45:0},grid:{color:'#1e293b'}},y:{ticks:{color:'#94a3b8',font:chartTickFont(),callback:yTickLabel},grid:{color:'#334155'},title:{display:!isPhonePortrait(),text:'มม./เดือน',color:'#64748b'},min:0}}}});
 }
 function renderLineChart(res){
   if(!chartReady())return;
@@ -605,9 +609,9 @@ function renderLineChart(res){
   if(latestIdx>=0){const ds=datasets.splice(latestIdx,1)[0];Object.assign(ds,{label:`${latestActualYr+543} (${latestActualLabel})`,borderColor:'#f8fafc',backgroundColor:'#f8fafc22',borderWidth:7,borderDash:[],pointRadius:6,pointHoverRadius:10,pointBackgroundColor:'#f8fafc',pointBorderColor:'#0f172a',pointBorderWidth:3,order:-999});datasets.push(ds);}
   else if(latestActualYr!=null)addYear(latestActualYr,`${latestActualYr+543} (${latestActualLabel})`,'#f8fafc',7);
   mainChartInst=new Chart(ctx,{type:'line',data:{labels:MONTHS,datasets},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{labels:{color:'#94a3b8',font:{size:12}}},tooltip:{backgroundColor:'#1e293b',borderColor:'#334155',borderWidth:1,titleColor:'#f1f5f9',bodyColor:'#cbd5e1',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)} มม./เดือน`}}},
-      scales:{x:{ticks:{color:'#94a3b8'},grid:{color:'#1e293b'}},y:{ticks:{color:'#94a3b8',callback:v=>v+' มม./เดือน'},grid:{color:'#334155'},title:{display:true,text:'มม./เดือน',color:'#64748b'},min:0}}}});
+    options:{responsive:true,maintainAspectRatio:false,layout:chartLayout(),interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{color:'#94a3b8',font:chartTickFont()}},tooltip:{backgroundColor:'#1e293b',borderColor:'#334155',borderWidth:1,titleColor:'#f1f5f9',bodyColor:'#cbd5e1',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)} มม./เดือน`}}},
+      scales:{x:{ticks:{color:'#94a3b8',font:chartTickFont(),maxRotation:isPhonePortrait()?45:50,minRotation:isPhonePortrait()?45:0},grid:{color:'#1e293b'}},y:{ticks:{color:'#94a3b8',font:chartTickFont(),callback:yTickLabel},grid:{color:'#334155'},title:{display:!isPhonePortrait(),text:'มม./เดือน',color:'#64748b'},min:0}}}});
 }
 
 /* ══ DONUT ══ */
