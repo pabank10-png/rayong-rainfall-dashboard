@@ -201,6 +201,16 @@
     .donut-item,.donut-row.row-bot .donut-item{flex:0 0 100%;}
     .chart-scroll{min-width:620px;}
   }
+  @media(max-width:480px) and (orientation:portrait){
+    .chart-card.full{overflow-x:hidden;}
+    .chart-scroll{height:240px;min-width:0;width:100%;}
+    .table-wrap{max-height:none;overflow-x:hidden;}
+    table{min-width:0;width:100%;table-layout:fixed;font-size:9.5px;}
+    th{padding:5px 3px;font-size:9px;letter-spacing:0;}
+    td{padding:4px 3px;line-height:1.2;word-break:break-word;}
+    td.month-col{width:40px;white-space:normal;}
+    tr.total-row td{font-size:10px;padding-top:5px;padding-bottom:5px;}
+  }
 </style>
 
 <!-- HERO -->
