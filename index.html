@@ -570,10 +570,11 @@ function chartReady(){
   if(fb)fb.style.display='block';
   return false;
 }
+function isPhoneChart(){return window.matchMedia('(max-width:480px), (max-height:480px)').matches;}
 function isPhonePortrait(){return window.matchMedia('(max-width:480px) and (orientation:portrait)').matches;}
-function yTickLabel(v){return isPhonePortrait()?`${v} มม.`:`${v} มม./เดือน`;}
-function chartLayout(){return isPhonePortrait()?{padding:{left:8,right:4,top:4,bottom:0}}:{};}
-function chartTickFont(){return isPhonePortrait()?{size:10}:{size:12};}
+function yTickLabel(v){return isPhoneChart()?v:`${v} มม./เดือน`;}
+function chartLayout(){return isPhoneChart()?{padding:{left:8,right:4,top:4,bottom:0}}:{};}
+function chartTickFont(){return isPhoneChart()?{size:10}:{size:12};}
 function renderBarChart(resolved){
   if(!chartReady())return;
   if(mainChartInst)mainChartInst.destroy();
