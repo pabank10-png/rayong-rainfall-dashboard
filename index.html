@@ -201,16 +201,6 @@
     .donut-item,.donut-row.row-bot .donut-item{flex:0 0 100%;}
     .chart-scroll{min-width:620px;}
   }
-  @media(max-width:480px) and (orientation:portrait){
-    .chart-card.full{overflow-x:hidden;}
-    .chart-scroll{height:270px;min-width:0;width:100%;}
-    .table-wrap{max-height:none;overflow-x:hidden;}
-    table{min-width:0;width:100%;table-layout:fixed;font-size:9.5px;}
-    th{padding:5px 3px;font-size:9px;letter-spacing:0;}
-    td{padding:4px 3px;line-height:1.2;word-break:break-word;}
-    td.month-col{width:40px;white-space:normal;}
-    tr.total-row td{font-size:10px;padding-top:5px;padding-bottom:5px;}
-  }
 </style>
 
 <!-- HERO -->
@@ -306,22 +296,22 @@ const DATA={
     1970:[6.667,41.233,80.655,78.193,266.012,241.112,185.772,256.651,281.255,137.53,122.869,109.433],
     1971:[2.639,17.5,42.206,92.702,265.914,150.216,131.956,334.606,258.614,228.169,25.054,1.947],
     1972:[0,16.266,36.355,141.253,36.234,198.96,105.367,105.836,357.918,136.204,139.748,46.644],
-    1973:[9.224,10.594,47.96,31.161,193.637,167.819,195.378,170.844,346.309,145.297,72.316,3.096],
+    1973:[9.224,10.594,47.96,31.161,193.636,167.819,195.378,170.844,346.309,145.297,72.316,3.096],
     1974:[8.572,12.354,73.626,192.785,219.538,75.439,132.017,222.513,230.362,499.221,73.918,0.974],
-    1975:[59.005,7.392,30.871,37.745,223.188,180.604,178.24,225.315,214.902,191.25,107.449,15.154],
+    1975:[59.005,7.392,30.871,37.745,223.188,180.604,178.24,225.315,214.902,191.249,107.449,15.154],
     1976:[0,41.729,55.373,77.229,215.502,121.19,236.553,288.692,290.005,328.44,69.002,0.17],
     1977:[7.835,37.364,29.775,68.36,156.801,109.695,195.145,160.577,243.382,190.499,41.455,0.952],
-    1978:[64.111,145.206,18.218,68.223,235.577,218.209,208.244,132.701,368.63,123.533,21.274,0],
+    1978:[64.111,145.206,18.218,68.223,235.577,218.209,208.244,132.7,368.63,123.533,21.274,0],
     1979:[8.027,9.601,2.514,83.095,151.667,168.532,144.075,128.241,293.719,79.363,7.906,6.63],
     1980:[0,13.326,43.136,63.541,67.28,341.464,209.814,245.285,293.945,230.872,40.352,1.224],
     1981:[0.303,44.508,28.577,120.596,231.99,164.5,156.65,147.725,351.217,145.934,187.113,0.429],
-    1982:[0,21.347,77.031,91.288,151.614,313.817,156.025,154.365,233.006,127.969,81.801,24.587],
+    1982:[0,21.347,77.031,91.288,151.614,313.817,156.025,154.366,233.006,127.968,81.801,24.587],
     1983:[0.539,0.189,57.923,9.059,145.188,135.824,214.019,403.903,291.209,356.634,213.347,15.041],
-    1984:[3.864,17.979,37.227,52.474,141.882,225.616,152.23,103.963,229.637,139.532,56.332,0.677],
+    1984:[3.864,17.979,37.227,52.474,141.882,225.616,152.23,103.962,229.637,139.532,56.332,0.677],
     1985:[25.742,25.574,43.096,145.451,266.372,86.761,132.212,103.379,261.613,234.502,95.253,0.499],
     1986:[0.817,16.031,2.179,70.227,222.508,89.671,130.256,151.563,248.503,286.27,33.439,3.47],
     1987:[0,10.644,37.526,55.548,145.776,186.001,89.909,150.351,222.739,306.234,185.767,0],
-    1988:[0.015,26.24,29.305,130.903,260.051,205.75,255.314,225.457,292.607,295.057,20.911,0],
+    1988:[0.015,26.24,29.305,130.903,260.051,205.749,255.314,225.457,292.607,295.057,20.911,0],
     1989:[44.165,40.393,60.026,31.013,104.516,131.032,130.107,186.53,244.001,206.674,37.22,0.726],
     1990:[18.952,5.252,80.239,50.963,191.545,60.774,137.58,108.134,298.456,314.528,35.065,0.34],
     1991:[0.231,19.02,78.756,91.794,173.995,99.103,177.92,146.622,384.903,207.955,2.863,2.049],
@@ -333,41 +323,41 @@ const DATA={
     1997:[33.396,19.07,44.501,67.883,85.741,81.044,72.077,87.196,339.421,182.038,45.777,0],
     1998:[7.225,23.987,31.182,87.877,150.524,152.602,203.994,242.821,198.376,195.136,49.701,7.113],
     1999:[8.415,14.612,88.663,215.339,199.004,101.428,108.012,124.441,212.407,285.603,87.602,0.376],
-    2000:[8.045,68.133,39.305,145.332,162.657,192.526,137.551,133.233,245.751,191.096,9.85,2.727],
+    2000:[8.045,68.133,39.305,145.332,162.657,192.526,137.551,133.233,245.751,191.097,9.85,2.727],
     2001:[19.845,10.859,171.835,62.413,193.94,154.065,70.834,165.608,168.979,232.722,32.374,9.521],
     2002:[5.709,37.474,64.832,91.982,216.962,145.334,113.524,178.906,198.209,109.66,55.92,31.534],
     2003:[0,39.468,204.289,49.642,125.925,192.541,211.436,131.614,248.129,145.167,0.836,0],
     2004:[28.103,42.893,45.693,64.495,136.988,159.307,158.707,138.393,249.994,98.524,5.401,0],
     2005:[28.158,0.593,61.115,100.593,95.691,117.555,102.154,117.448,319.611,149.72,102.882,26.971],
-    2006:[1.123,38.043,72.3,82.297,225.695,143.357,159.292,158.814,333.3,182.538,23.768,3.641],
+    2006:[1.123,38.043,72.3,82.297,225.695,143.357,159.292,158.814,333.299,182.538,23.768,3.641],
     2007:[3.659,11.669,77.531,187.118,272.346,157.25,192.278,75.062,202.418,82.887,21.419,0.027],
     2008:[4.105,48.9,44.337,161.328,126.129,182.09,255.623,168.616,306.769,237.761,33.687,0.244],
-    2009:[0.006,4.955,112.693,120.612,221.141,100.765,148.913,121.481,238.824,185.549,29.482,7.999],
+    2009:[0.006,4.955,112.693,120.612,221.141,100.765,148.913,121.482,238.824,185.549,29.482,7.999],
     2010:[43.111,22.856,46.29,103.387,146.315,201.887,290.906,274.796,249.922,226.415,8.356,3.083],
     2011:[0.007,52.77,101.758,167.272,181.499,169.203,167.352,296.906,306.89,214.836,14.044,1.997],
-    2012:[47.25,29.41,64.938,55.709,161.01,113.283,220.351,105.253,433.415,205.934,76.332,3.109],
+    2012:[47.25,29.41,64.938,55.709,161.01,113.283,220.351,105.253,433.415,205.933,76.332,3.109],
     2013:[79.198,7.054,65.179,94.503,106.553,231.527,210.818,166.316,279.895,342.884,64.15,9.969],
     2014:[0,15.933,37.776,109.368,98.918,159.844,128.349,160.69,234.946,238.629,91.26,10.637],
     2015:[3.707,37.046,67.669,67.241,84.299,161.676,115.561,109.73,355.809,206.636,94.456,26.068],
     2016:[58.551,5.584,17.146,56.172,85.759,159.014,221.736,149.153,249.615,185.611,70.672,2.665],
-    2017:[51.208,4.788,108.781,80.101,334.151,176.517,260.538,140.176,188.209,238.165,68.132,11.599],
+    2017:[51.208,4.788,108.782,80.101,334.151,176.517,260.538,140.176,188.209,238.165,68.132,11.599],
     2018:[103.477,44.292,70.442,220.006,241,127.433,105.446,117.062,340.312,180.923,5.809,21.55],
     2019:[1.972,40.945,32.182,64.977,137.613,121.67,103.346,83.964,218.815,157.451,17.897,1.376],
     2020:[8.026,19.382,54.919,98.877,131.687,227.068,169.679,161.731,251.036,290.968,30.046,6.734],
     2021:[0,26.395,82.412,209.594,117.273,89.931,207.196,202.551,292.812,258.359,69.354,4.059],
     2022:[29.899,72.09,105.06,130.318,136.974,115.971,251.693,248.152,325.36,158.986,114.483,3.646],
     2023:[3.582,26.446,26.971,108.286,69.791,219.357,187.011,47.768,218.829,214.881,49.5,10.063],
-    2024:[1.992,10.728,103.12,26.831,304.236,102.844,218.198,167.824,269.498,186.011,37.741,4.515],
+    2024:[1.992,10.728,103.12,26.831,304.236,102.844,218.199,167.824,269.497,186.011,37.741,4.515],
     2025:[0,36.426,79.491,92.17,352.079,109.623,134.177,151.168,230.157,135.806,78.87,5.423],
     2026:[4.769,40.88,62.01,100.71,null,null,null,null,null,null,null,null]
   },
   '3 อ่าง':{
     1970:[12.405,55.901,104.669,68.284,356.326,141.378,116.871,157.025,321.296,146.46,188.195,151.054],
     1971:[1.248,18.717,55.788,64.189,342.938,79.163,68.43,301.102,248.788,263.092,39.851,1.396],
-    1972:[0,14.924,19.063,182.159,29.018,173.531,66.116,57.431,355.012,131.607,148.113,36.697],
+    1972:[0,14.924,19.063,182.159,29.018,173.531,66.116,57.431,355.012,131.607,148.114,36.697],
     1973:[16.463,21.397,52.751,20.54,183.743,165.53,157.186,96.579,372.492,168.517,82.322,4.735],
     1974:[14.804,5.208,58.742,156.36,253.524,35.4,92.167,148.826,219.611,498.18,74.558,0.63],
-    1975:[66.034,9.206,32.039,29.199,300.645,116.282,127.251,165.697,171.346,240.936,104.522,19.806],
+    1975:[66.034,9.206,32.039,29.199,300.645,116.282,127.252,165.697,171.346,240.936,104.522,19.806],
     1976:[0,36.016,51.841,86.395,247.854,72.126,161.192,229.427,218.716,374.873,63.438,0],
     1977:[14.939,43.905,36.53,41.103,96.972,85.898,207.084,112.403,171.805,247.63,55.603,2.141],
     1978:[75.889,200.226,2.223,57.788,246.025,159.376,171.167,99.307,255.728,136.013,28.843,0],
@@ -378,7 +368,7 @@ const DATA={
     1983:[0.892,0.111,70.264,4.068,129.408,81.469,185.034,371.361,286.642,370.849,290.093,15.369],
     1984:[3.588,15.519,35.264,35.449,98.072,178.357,126.007,47.025,220.966,151.5,64.715,0.031],
     1985:[25.822,35.546,50.707,141.764,292.98,77.185,111.403,81.852,221.117,275.921,92.49,0.162],
-    1986:[2.071,15.914,2.79,68.399,207.956,45.083,117.695,78.784,232.991,289.193,42.17,2.083],
+    1986:[2.071,15.914,2.79,68.399,207.956,45.083,117.694,78.784,232.991,289.193,42.17,2.083],
     1987:[0,14.257,35.041,55.513,128.454,176.601,57.056,119.522,207.133,301.945,195.734,0],
     1988:[0.01,30.404,27.437,127.769,241.102,139.95,240.055,202.615,311.655,299.288,18.923,0],
     1989:[104.441,73.845,69.546,31.301,63.239,63.567,92.793,98.514,254.579,274.934,33.391,1.648],
@@ -388,22 +378,22 @@ const DATA={
     1993:[81.043,22.015,87.66,64.749,138.057,69.662,51.326,128.328,221.793,264.459,45.205,1.265],
     1994:[0,4.961,106.245,36.561,300.098,280.263,60.452,105.856,201.021,82.164,14.077,19.877],
     1995:[26.303,5.319,33.81,58.239,199.192,151.42,214.234,257.105,399.059,227.143,73.464,2.817],
-    1996:[14.016,38.403,67.73,87.711,203.562,335.816,238.362,120.065,335.409,263.125,105.853,2.166],
-    1997:[0.472,26.838,39.949,80.045,104.569,21.661,56.711,39.754,275.988,219.981,77.527,0],
-    1998:[18.901,17.563,7.53,62.293,160.716,166.228,246.231,242.807,262.09,185.028,48.421,20.616],
+    1996:[14.016,38.403,67.73,87.711,203.562,335.816,238.362,120.065,335.409,263.125,105.854,2.166],
+    1997:[0.472,26.838,39.949,80.045,104.569,21.661,56.711,39.754,275.989,219.981,77.527,0],
+    1998:[18.902,17.563,7.53,62.293,160.716,166.228,246.231,242.807,262.09,185.028,48.421,20.616],
     1999:[5.537,13.869,85.024,133.397,247.968,114.554,65.021,110.429,206.857,322.706,83.391,0.177],
     2000:[15.262,33.593,24.862,226.416,81.911,234.958,101.367,76.571,186.467,248.227,8.281,5.801],
     2001:[45.969,9.764,234.841,30.901,183.889,115.841,24.957,170.104,183.373,335.976,47.528,5.698],
-    2002:[3.904,47.844,86.272,54.499,213.038,130.537,94.658,133.123,164.633,144.601,79.236,44.336],
+    2002:[3.904,47.844,86.272,54.499,213.039,130.537,94.658,133.123,164.633,144.601,79.236,44.336],
     2003:[0,27.695,186.699,48.744,104.241,189.626,267.688,84.346,204.631,183.268,3.15,0],
     2004:[39.957,47.573,12.642,53.928,159.767,135.382,101.149,77.607,319.792,141.524,19.355,0],
-    2005:[51.106,0.254,60.485,98.874,82.044,116.698,79.921,79.078,258.048,209.706,64.013,38.58],
+    2005:[51.106,0.254,60.485,98.874,82.044,116.699,79.921,79.078,258.048,209.706,64.013,38.58],
     2006:[1.927,56.338,45.84,69.865,230.281,159.315,102.941,105.594,282.522,132.2,38.922,9.27],
     2007:[8.349,4.213,23.826,113.92,296.827,161.337,162.037,80.874,177.977,87.326,35.871,0.12],
     2008:[0.794,63.149,35.89,95.587,80.404,207.923,227.926,85.008,216.984,252.939,38.122,0.001],
     2009:[0,10.103,65.208,141.725,241.829,77.407,138.381,97.708,190.927,240.675,16.375,9.924],
     2010:[57.955,10.439,39.957,77.989,134.423,250.479,233.41,269.301,227.613,210.778,18.852,8.826],
-    2011:[0.03,92.262,113.283,161.32,118.528,178.334,132.03,259.143,228.697,285.442,18.384,0.873],
+    2011:[0.03,92.262,113.283,161.32,118.528,178.334,132.03,259.143,228.697,285.441,18.384,0.873],
     2012:[37.911,62.336,33.913,25.201,177.078,100.211,176.555,67.037,392.584,210.79,131.611,3.901],
     2013:[136.954,4.735,38.994,108.686,96.414,219.892,173.37,126.846,118.084,398.886,93.962,7.813],
     2014:[0,37.342,17.387,48.569,84.55,124.659,61.046,124.467,153.173,306.161,113.151,17.504],
@@ -414,9 +404,9 @@ const DATA={
     2019:[9.743,18.767,40.643,53.996,144.146,142.681,47.445,50.02,217.429,220.88,24.517,3.926],
     2020:[14.964,12.179,20.541,123.261,99.739,287.928,166.195,104.179,337.767,364.477,36.855,13.414],
     2021:[0,41.44,67.366,184.426,197.909,94.345,210.328,244.814,399.497,260.262,108.465,8.47],
-    2022:[41.468,83.083,88.809,83.67,119.245,158.79,204.358,231.144,436.676,207.029,148.293,2.25],
+    2022:[41.468,83.083,88.809,83.67,119.244,158.79,204.358,231.144,436.676,207.029,148.293,2.25],
     2023:[9.348,34.172,11.198,67.017,63.381,171.928,228.253,30.382,141.398,240.28,53.126,18.753],
-    2024:[8.579,18.98,63.499,6.002,316.952,49.259,242.629,203.758,278.053,232.21,66.854,0.56],
+    2024:[8.579,18.98,63.499,6.002,316.952,49.259,242.629,203.758,278.052,232.21,66.854,0.56],
     2025:[0,45.224,62.607,63.803,394.665,58.921,68.091,112.995,274.536,173.204,101.549,0.561],
     2026:[2.955,62.38,99.65,35.49,null,null,null,null,null,null,null,null]
   }
@@ -537,15 +527,15 @@ function renderKPIs_S1(resolved){
   const p=resolved[0],pD=p.data.map(v=>v||0),total=sumArr(pD);
   const mxV=Math.max(...pD),mnV=Math.min(...pD.filter(x=>x>0)||[0]);
   const mxM=MONTHS[pD.indexOf(mxV)],mnM=MONTHS[pD.findIndex(x=>x===mnV)];
-  const avgLines=resolved.map((r,i)=>({label:r.shortLabel,avg:(sumArr(r.data.map(v=>v||0))/12).toFixed(0),color:SLOT_COLORS[i]}));
+  const avgLines=resolved.map((r,i)=>({label:r.shortLabel,avg:(sumArr(r.data.map(v=>v||0))/12).toFixed(1),color:SLOT_COLORS[i]}));
   let h=`
-    <div class="kpi-card blue"><div class="kpi-label">💧 รวมทั้งปี</div><div class="kpi-value">${total.toFixed(0)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./ปี</span></div><div class="kpi-sub">${p.shortLabel}</div></div>
-    <div class="kpi-card green"><div class="kpi-label">📈 เดือนสูงสุด</div><div class="kpi-value">${mxV.toFixed(0)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./เดือน</span></div><div class="kpi-sub">${mxM} · ${p.shortLabel}</div></div>
-    <div class="kpi-card rose"><div class="kpi-label">📉 เดือนต่ำสุด</div><div class="kpi-value">${mnV.toFixed(0)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./เดือน</span></div><div class="kpi-sub">${mnM} · ${p.shortLabel}</div></div>
+    <div class="kpi-card blue"><div class="kpi-label">💧 รวมทั้งปี</div><div class="kpi-value">${total.toFixed(1)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./ปี</span></div><div class="kpi-sub">${p.shortLabel}</div></div>
+    <div class="kpi-card green"><div class="kpi-label">📈 เดือนสูงสุด</div><div class="kpi-value">${mxV.toFixed(1)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./เดือน</span></div><div class="kpi-sub">${mxM} · ${p.shortLabel}</div></div>
+    <div class="kpi-card rose"><div class="kpi-label">📉 เดือนต่ำสุด</div><div class="kpi-value">${mnV.toFixed(1)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./เดือน</span></div><div class="kpi-sub">${mnM} · ${p.shortLabel}</div></div>
     <div class="kpi-card amber"><div class="kpi-label">📊 เฉลี่ย/เดือน</div><div class="kpi-avg-lines">${avgLines.map(a=>`<div class="kpi-avg-line"><span class="kpi-avg-dot" style="background:${a.color};"></span><span style="color:${a.color};font-weight:700;">${a.avg}</span><span style="color:#94a3b8;margin-left:2px;">มม./เดือน · ${a.label}</span></div>`).join('')}</div></div>`;
   resolved.slice(1).forEach(r=>{
     const delta=total-sumArr(r.data.map(v=>v||0));
-    h+=`<div class="kpi-card ${delta>=0?'green':'rose'}"><div class="kpi-label">${delta>=0?'⬆️':'⬇️'} เทียบกับ ${r.shortLabel}</div><div class="kpi-value" style="font-size:19px;">${(delta>=0?'+':'')+delta.toFixed(0)+' มม./ปี'}</div></div>`;
+    h+=`<div class="kpi-card ${delta>=0?'green':'rose'}"><div class="kpi-label">${delta>=0?'⬆️':'⬇️'} เทียบกับ ${r.shortLabel}</div><div class="kpi-value" style="font-size:19px;">${(delta>=0?'+':'')+delta.toFixed(1)+' มม./ปี'}</div></div>`;
   });
   document.getElementById('kpiRow').innerHTML=h;
 }
@@ -558,11 +548,11 @@ function renderKPIs_S3(res){
   const sy10=FULL_YEARS.slice(-Math.min(10,FULL_YEARS.length))[0]+543;
   const sy15=FULL_YEARS.slice(-Math.min(15,FULL_YEARS.length))[0]+543;
   document.getElementById('kpiRow').innerHTML=`
-    <div class="kpi-card green"><div class="kpi-label">🏆 ปีฝนมากสุด</div><div class="kpi-value">${mx.yr+543}</div><div class="kpi-sub">${mx.t.toFixed(0)} มม./ปี</div></div>
-    <div class="kpi-card rose"><div class="kpi-label">🌵 ปีฝนน้อยสุด</div><div class="kpi-value">${mn.yr+543}</div><div class="kpi-sub">${mn.t.toFixed(0)} มม./ปี</div></div>
-    <div class="kpi-card amber"><div class="kpi-label">📊 เฉลี่ยฝน 5 ปี</div><div class="kpi-value">${a5.toFixed(0)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./ปี</span></div><div class="kpi-sub">${sy5}–${LAST_FULL_YEAR_CE+543}</div></div>
-    <div class="kpi-card blue"><div class="kpi-label">📊 เฉลี่ยฝน 10 ปี</div><div class="kpi-value">${a10.toFixed(0)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./ปี</span></div><div class="kpi-sub">${sy10}–${LAST_FULL_YEAR_CE+543}</div></div>
-    <div class="kpi-card purple"><div class="kpi-label">📊 เฉลี่ยฝน 15 ปี</div><div class="kpi-value">${a15.toFixed(0)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./ปี</span></div><div class="kpi-sub">${sy15}–${LAST_FULL_YEAR_CE+543}</div></div>`;
+    <div class="kpi-card green"><div class="kpi-label">🏆 ปีฝนมากสุด</div><div class="kpi-value">${mx.yr+543}</div><div class="kpi-sub">${mx.t.toFixed(1)} มม./ปี</div></div>
+    <div class="kpi-card rose"><div class="kpi-label">🌵 ปีฝนน้อยสุด</div><div class="kpi-value">${mn.yr+543}</div><div class="kpi-sub">${mn.t.toFixed(1)} มม./ปี</div></div>
+    <div class="kpi-card amber"><div class="kpi-label">📊 เฉลี่ยฝน 5 ปี</div><div class="kpi-value">${a5.toFixed(1)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./ปี</span></div><div class="kpi-sub">${sy5}–${LAST_FULL_YEAR_CE+543}</div></div>
+    <div class="kpi-card blue"><div class="kpi-label">📊 เฉลี่ยฝน 10 ปี</div><div class="kpi-value">${a10.toFixed(1)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./ปี</span></div><div class="kpi-sub">${sy10}–${LAST_FULL_YEAR_CE+543}</div></div>
+    <div class="kpi-card purple"><div class="kpi-label">📊 เฉลี่ยฝน 15 ปี</div><div class="kpi-value">${a15.toFixed(1)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./ปี</span></div><div class="kpi-sub">${sy15}–${LAST_FULL_YEAR_CE+543}</div></div>`;
 }
 
 /* CHARTS */
@@ -572,19 +562,43 @@ function chartReady(){
   if(fb)fb.style.display='block';
   return false;
 }
-function isPhoneChart(){return window.matchMedia('(max-width:480px), (max-height:480px)').matches;}
-function isPhonePortrait(){return window.matchMedia('(max-width:480px) and (orientation:portrait)').matches;}
-function yTickLabel(v){return isPhoneChart()?v:`${v} มม./เดือน`;}
-function chartLayout(){return isPhoneChart()?{padding:{left:8,right:4,top:4,bottom:0}}:{};}
-function chartTickFont(){return isPhoneChart()?{size:10}:{size:12};}
 function renderBarChart(resolved){
   if(!chartReady())return;
   if(mainChartInst)mainChartInst.destroy();
   const ctx=document.getElementById('mainChart').getContext('2d');
-  mainChartInst=new Chart(ctx,{type:'bar',data:{labels:MONTHS,datasets:resolved.map((r,i)=>({label:r.shortLabel,data:r.data.map(v=>v||0),backgroundColor:SLOT_COLORS[i]+'88',borderColor:SLOT_COLORS[i],borderWidth:1.5,borderRadius:4}))},
-    options:{responsive:true,maintainAspectRatio:false,layout:chartLayout(),interaction:{mode:'index',intersect:false},
-      plugins:{legend:{labels:{color:'#94a3b8',font:chartTickFont()}},tooltip:{backgroundColor:'#1e293b',borderColor:'#334155',borderWidth:1,titleColor:'#f1f5f9',bodyColor:'#cbd5e1',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)} มม./เดือน`}}},
-      scales:{x:{ticks:{color:'#94a3b8',font:chartTickFont(),maxRotation:isPhonePortrait()?45:50,minRotation:isPhonePortrait()?45:0},grid:{color:'#1e293b'}},y:{ticks:{color:'#94a3b8',font:chartTickFont(),callback:yTickLabel},grid:{color:'#334155'},title:{display:!isPhonePortrait(),text:'มม./เดือน',color:'#64748b'},min:0}}}});
+  // Bar datasets – monthly rainfall
+  const barDS=resolved.map((r,i)=>({
+    type:'bar',label:r.shortLabel,
+    data:r.data.map(v=>v||0),
+    backgroundColor:SLOT_COLORS[i]+'88',borderColor:SLOT_COLORS[i],
+    borderWidth:1.5,borderRadius:4,yAxisID:'y'
+  }));
+  // Cumulative line datasets (secondary axis)
+  const cumDS=resolved.map((r,i)=>{
+    let acc=0;
+    const cd=r.data.map((v,mi)=>{
+      if(r.isCurrent&&mi>CURRENT_MONTH_IDX)return null;
+      acc+=v||0; return +acc.toFixed(1);
+    });
+    return {type:'line',label:r.shortLabel+' (สะสม)',data:cd,
+      borderColor:SLOT_COLORS[i],backgroundColor:'transparent',
+      borderWidth:2,borderDash:[6,3],pointRadius:3,pointHoverRadius:6,
+      tension:0.3,spanGaps:false,yAxisID:'y2'};
+  });
+  mainChartInst=new Chart(ctx,{data:{labels:MONTHS,datasets:[...barDS,...cumDS]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{color:'#94a3b8',font:{size:12}}},
+        tooltip:{backgroundColor:'#1e293b',borderColor:'#334155',borderWidth:1,titleColor:'#f1f5f9',bodyColor:'#cbd5e1',
+          callbacks:{label:c=>c.dataset.yAxisID==='y2'
+            ?`${c.dataset.label}: ${c.parsed.y.toFixed(1)} มม.`
+            :`${c.dataset.label}: ${c.parsed.y.toFixed(1)} มม./เดือน`}}},
+      scales:{
+        x:{ticks:{color:'#94a3b8'},grid:{color:'#1e293b'}},
+        y:{position:'left',ticks:{color:'#94a3b8',callback:v=>v+' มม./เดือน'},
+          grid:{color:'#334155'},title:{display:true,text:'มม./เดือน',color:'#64748b'},min:0},
+        y2:{position:'right',ticks:{color:'#94a3b8',callback:v=>v+' มม.'},
+          grid:{drawOnChartArea:false},title:{display:true,text:'สะสม (มม.)',color:'#64748b'},min:0}
+      }}});
 }
 function renderLineChart(res){
   if(!chartReady())return;
@@ -612,9 +626,9 @@ function renderLineChart(res){
   if(latestIdx>=0){const ds=datasets.splice(latestIdx,1)[0];Object.assign(ds,{label:`${latestActualYr+543} (${latestActualLabel})`,borderColor:'#f8fafc',backgroundColor:'#f8fafc22',borderWidth:7,borderDash:[],pointRadius:6,pointHoverRadius:10,pointBackgroundColor:'#f8fafc',pointBorderColor:'#0f172a',pointBorderWidth:3,order:-999});datasets.push(ds);}
   else if(latestActualYr!=null)addYear(latestActualYr,`${latestActualYr+543} (${latestActualLabel})`,'#f8fafc',7);
   mainChartInst=new Chart(ctx,{type:'line',data:{labels:MONTHS,datasets},
-    options:{responsive:true,maintainAspectRatio:false,layout:chartLayout(),interaction:{mode:'index',intersect:false},
-      plugins:{legend:{labels:{color:'#94a3b8',font:chartTickFont()}},tooltip:{backgroundColor:'#1e293b',borderColor:'#334155',borderWidth:1,titleColor:'#f1f5f9',bodyColor:'#cbd5e1',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)} มม./เดือน`}}},
-      scales:{x:{ticks:{color:'#94a3b8',font:chartTickFont(),maxRotation:isPhonePortrait()?45:50,minRotation:isPhonePortrait()?45:0},grid:{color:'#1e293b'}},y:{ticks:{color:'#94a3b8',font:chartTickFont(),callback:yTickLabel},grid:{color:'#334155'},title:{display:!isPhonePortrait(),text:'มม./เดือน',color:'#64748b'},min:0}}}});
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{color:'#94a3b8',font:{size:12}}},tooltip:{backgroundColor:'#1e293b',borderColor:'#334155',borderWidth:1,titleColor:'#f1f5f9',bodyColor:'#cbd5e1',callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)} มม./เดือน`}}},
+      scales:{x:{ticks:{color:'#94a3b8'},grid:{color:'#1e293b'}},y:{ticks:{color:'#94a3b8',callback:v=>v+' มม./เดือน'},grid:{color:'#334155'},title:{display:true,text:'มม./เดือน',color:'#64748b'},min:0}}}});
 }
 
 /* ══ DONUT ══ */
@@ -642,7 +656,7 @@ function makeDonutItem(col){
     data:{labels:SEASON_LABELS,datasets:[{data:sv,backgroundColor:SEASON_COLORS,borderColor:'#0f172a',borderWidth:2,hoverOffset:6}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
       plugins:{legend:{display:false},tooltip:{backgroundColor:'rgb(15,23,42)',borderColor:'#334155',borderWidth:1,titleColor:'#f1f5f9',bodyColor:'#cbd5e1',
-        callbacks:{label:c=>{const tot=sv.reduce((a,b)=>a+b,0)||1;return `${c.parsed.toFixed(0)} มม./ปี (${(c.parsed/tot*100).toFixed(1)}%)`;}}}
+        callbacks:{label:c=>{const tot=sv.reduce((a,b)=>a+b,0)||1;return `${c.parsed.toFixed(1)} มม./ปี (${(c.parsed/tot*100).toFixed(1)}%)`;}}}
       }},plugins:[PCT_PLUGIN]});
   donutInsts.push(inst);
   return item;
@@ -684,22 +698,34 @@ function renderDonuts(cols, isS3){
 function renderTable(cols){
   const slotColors=cols.map(c=>c.color||SLOT_COLORS[0]);
   const totals=cols.map(c=>sumArr(c.data.map(v=>v||0)));
-  let h=`<table><thead><tr><th>เดือน</th>${cols.map((c,i)=>`<th style="color:${slotColors[i]};">${c.label}</th>`).join('')}</tr></thead><tbody>`;
+  // Header: เดือน | Year | ⟳สะสม | Year2 | ⟳สะสม ...
+  let h=`<table><thead><tr><th>เดือน</th>${cols.map((c,i)=>
+    `<th style="color:${slotColors[i]};">${c.label}</th>`+
+    `<th style="color:${slotColors[i]};opacity:.7;font-weight:600;font-size:11px;">⟳ สะสม</th>`
+  ).join('')}</tr></thead><tbody>`;
+  const running=cols.map(()=>0);
   MONTHS.forEach((m,mi)=>{
     const vals=cols.map(c=>c.data[mi]||0);
     const mxV=Math.max(...vals),mnV=Math.min(...vals.filter(x=>x>0));
     h+=`<tr><td class="month-col">${m}</td>`;
-    cols.forEach(c=>{
+    cols.forEach((c,i)=>{
       const v=c.data[mi]||0;
       const isFut=c.isCurrent&&mi>CURRENT_MONTH_IDX;
-      if(isFut){h+=`<td class="zero-cell">—</td>`;return;}
+      if(isFut){h+=`<td class="zero-cell">—</td><td class="zero-cell" style="color:#475569;">—</td>`;return;}
+      running[i]+=v;
       let cls='';
       if(vals.length>1&&v>0){if(v===mxV)cls=' class="hi"';else if(v===mnV&&mnV!==mxV)cls=' class="lo"';}
       h+=`<td${cls}>${fmt(v)}</td>`;
+      h+=`<td style="color:${slotColors[i]};opacity:.85;font-size:12px;">${running[i].toFixed(1)}</td>`;
     });
     h+=`</tr>`;
   });
-  h+=`<tr class="total-row"><td class="month-col" style="color:#38bdf8;">รวม (มม./ปี)</td>${totals.map((t,i)=>`<td style="color:${slotColors[i]};">${t.toFixed(1)}</td>`).join('')}</tr>`;
+  h+=`<tr class="total-row"><td class="month-col" style="color:#38bdf8;">รวม (มม./ปี)</td>${
+    totals.map((t,i)=>
+      `<td style="color:${slotColors[i]};">${t.toFixed(1)}</td>`+
+      `<td style="color:${slotColors[i]};opacity:.7;font-size:12px;">${t.toFixed(1)}</td>`
+    ).join('')
+  }</tr>`;
   document.getElementById('tableWrap').innerHTML=h+'</tbody></table>';
 }
 
