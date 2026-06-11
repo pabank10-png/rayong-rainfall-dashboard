@@ -462,9 +462,7 @@ const ALL_CE_YEARS=[1970,1971,1972,1973,1974,1975,1976,1977,1978,1979,1980,1981,
 const FULL_YEARS=ALL_CE_YEARS.filter(y=>y<=LAST_FULL_YEAR_CE);
 const RESERVOIRS=['3 อ่าง','อ่างประแสร์'];
 const SLOT_COLORS=['#38bdf8','#34d399','#fbbf24'];
-// year slot → [borderAlpha, fillAlpha] — ปีหลักเต็ม เฟดลงเรื่อยๆ
-const YEAR_SHADES=[['ff','99'],['99','55'],['55','33']];
-const YEAR_DASH=[[],[5,4],[3,3]];
+
 const S3_COLORS=['#38bdf8','#34d399','#fbbf24','#fb7185','#a78bfa'];
 const OPT_AVG5='avg5',OPT_AVG10='avg10';
 const SEASON_GROUPS=[[11,0,1],[2,3,4],[5,6,7],[8,9,10]];
@@ -933,6 +931,7 @@ const DAILY_PROVINCES=Object.keys(DAILY_STATIONS);
 let d4_province='ระยอง';
 let d4_year=new Date().getFullYear();
 let d4_slots=[new Date().getFullYear()];
+let d4_stIdx=0;
 let d4_month=null;          // null=monthly overview; 1–12=daily drill-down
 let d4_chartInst=null;
 let d4_cache={};             // "stid_YYYY_MM" → daily data array
@@ -986,17 +985,29 @@ function renderDailyControls(){
   if(d4_slots.length<3)slotsHtml+=`<button class="add-btn" onclick="addD4Slot()">＋ เพิ่มปี</button>`;
   slotsHtml+=`</div></div>`;
 
+  const allSt=DAILY_STATIONS[d4_province];
+  const curSt=allSt[d4_stIdx]||allSt[0];
+  let stTabHtml='';
+  if(allSt.length>1){
+    stTabHtml=`<div class="ctrl-group"><label>🏭 สถานี</label><div style="display:flex;gap:6px;flex-wrap:wrap;">`;
+    allSt.forEach((st,i)=>{
+      const active=d4_stIdx===i;
+      stTabHtml+=`<button onclick="setD4Station(${i})" style="padding:6px 14px;border-radius:8px;border:1px solid ${active?st.color:'#334155'};background:${active?st.color+'22':'transparent'};color:${active?st.color:'#64748b'};cursor:pointer;font-family:Sarabun,sans-serif;font-size:12px;font-weight:${active?700:400};">${st.label}</button>`;
+    });
+    stTabHtml+=`</div></div><div class="ctrl-divider2"></div>`;
+  }
   cp.innerHTML=`
     <div class="ctrl-group"><label>🗺️ จังหวัด</label>
       <select id="d4prov">${DAILY_PROVINCES.map(p=>`<option value="${p}"${p===d4_province?' selected':''}>${p}</option>`).join('')}</select>
     </div>
     <div class="ctrl-divider"></div>
-    <div class="ctrl-divider2"></div>
+    ${stTabHtml}
     ${slotsHtml}
     ${drillBtn}
-    <div class="scenario-desc"><strong>🌧️ ฝนรายวัน</strong>${DAILY_STATIONS[d4_province].map(s=>s.label).join(' · ')}</div>`;
+    <div class="scenario-desc"><strong>🌧️ ฝนรายวัน</strong>${curSt.label}</div>`;
   document.getElementById('d4prov').addEventListener('change',e=>{
     d4_province=e.target.value;
+    d4_stIdx=0;
     const newStList=DAILY_STATIONS[d4_province];
     const minYear=Math.max(...newStList.map(s=>s.startYear));
     d4_slots=d4_slots.map(y=>Math.max(y,minYear));
@@ -1032,6 +1043,11 @@ function updateD4Slot(idx,val){
   d4_month=null;
   renderScenario4();
 }
+function setD4Station(idx){
+  d4_stIdx=idx;
+  d4_month=null;
+  renderScenario4();
+}
 
 async function renderScenario4(){
   renderDailyControls();
@@ -1044,7 +1060,7 @@ async function renderScenario4(){
 
 // ── Monthly overview: 12-bar chart, clickable to drill down ──────────────
 async function renderMonthlyOverview(){
-  const stList=DAILY_STATIONS[d4_province];
+  const stList=[DAILY_STATIONS[d4_province][d4_stIdx]||DAILY_STATIONS[d4_province][0]];
   const fallback=document.getElementById('dailyFallback');
   fallback.style.display='block';
   fallback.textContent='กำลังโหลดข้อมูล...';
@@ -1076,17 +1092,16 @@ async function renderMonthlyOverview(){
   let kpiHtml='';
   d4_slots.forEach((yr,si)=>{
     const sd=slotData[si];
-    const [bA]=YEAR_SHADES[si]||YEAR_SHADES[2];
+    const yColor=SLOT_COLORS[si];
     stList.forEach((st,sti)=>{
-      const kColor=st.color+bA;
       const totals=sd.monthTotals[sti];
       const annualTotal=totals.reduce((s,v)=>s+v,0).toFixed(1);
       const peakIdx=totals.indexOf(Math.max(...totals));
       const peakMon=TH_MONTHS_SHORT[peakIdx+1]||'—';
       const peakVal=totals[peakIdx]||0;
       const rainMonths=totals.filter(v=>v>0).length;
-      kpiHtml+=`<div class="kpi-card blue" style="border-left:4px solid ${kColor};">
-        <div class="kpi-label" style="color:${kColor};">พ.ศ. ${yr+543}${stList.length>1?' · '+st.label:''}</div>
+      kpiHtml+=`<div class="kpi-card blue" style="border-left:4px solid ${yColor};">
+        <div class="kpi-label" style="color:${yColor};">พ.ศ. ${yr+543}</div>
         <div class="kpi-value">${annualTotal} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./ปี</span></div>
         <div class="kpi-sub">สูงสุด ${peakVal} มม. (${peakMon}) · ${rainMonths} เดือนที่มีฝน</div></div>`;
     });
@@ -1108,25 +1123,23 @@ async function renderMonthlyOverview(){
   const datasets=[];
   d4_slots.forEach((yr,si)=>{
     const sd=slotData[si];
-    const [bA,fA]=YEAR_SHADES[si]||YEAR_SHADES[2];
-    const yDash=YEAR_DASH[si]||[2,3];
+    const yColor=SLOT_COLORS[si];
     stList.forEach((st,sti)=>{
-      const barLabel=d4_slots.length>1?(stList.length>1?`พ.ศ. ${yr+543} · ${st.label}`:`พ.ศ. ${yr+543}`):st.label;
-      const bColor=st.color+bA; const fColor=st.color+fA;
+      const barLabel=d4_slots.length>1?`พ.ศ. ${yr+543}`:st.label;
       const data=[...sd.monthTotals[sti],...Array(maxMonth-sd.maxMonth).fill(null)];
       datasets.push({
         type:'bar',label:barLabel,data,yAxisID:'y',
-        backgroundColor:fColor,borderColor:bColor,
+        backgroundColor:yColor+'88',borderColor:yColor,
         borderWidth:1.5,borderRadius:4,
         barPercentage:0.75,categoryPercentage:0.85,
-        hoverBackgroundColor:st.color+'bb',order:2
+        hoverBackgroundColor:yColor+'cc',order:2
       });
       let cum=0;
       const cumData=data.map(v=>{if(v==null)return null;cum+=v;return +cum.toFixed(1);});
       datasets.push({
         type:'line',label:`${barLabel} (สะสม)`,data:cumData,yAxisID:'y1',
-        borderColor:bColor,backgroundColor:'transparent',
-        borderWidth:2,borderDash:yDash,pointRadius:3,pointHoverRadius:6,
+        borderColor:yColor,backgroundColor:'transparent',
+        borderWidth:2,borderDash:si===0?[]:[si===1?[5,4]:[3,3]],pointRadius:3,pointHoverRadius:6,
         tension:0.35,order:1
       });
     });
@@ -1175,10 +1188,10 @@ async function renderMonthlyOverview(){
   // Monthly summary table
   let tbl=`<table><thead><tr><th>เดือน</th>`;
   d4_slots.forEach((yr,si)=>{
-    const [bA]=YEAR_SHADES[si]||YEAR_SHADES[2];
+    const yColor=SLOT_COLORS[si];
     stList.forEach((st,sti)=>{
-      const hColor=st.color+bA;
-      const lbl=d4_slots.length>1?(stList.length>1?`พ.ศ. ${yr+543} · ${st.label}`:`พ.ศ. ${yr+543}`):`${st.label}`;
+      const hColor=yColor;
+      const lbl=d4_slots.length>1?`พ.ศ. ${yr+543}`:st.label;
       tbl+=`<th style="color:${hColor};">${lbl} (มม.)</th>`;
       tbl+=`<th style="color:${hColor};opacity:0.7;font-weight:500;">สะสม</th>`;
     });
@@ -1218,7 +1231,7 @@ async function renderMonthlyOverview(){
 // ── Daily drill-down: show daily bars for selected month ─────────────────
 
 async function renderDailyDrilldown(){
-  const stList=DAILY_STATIONS[d4_province];
+  const stList=[DAILY_STATIONS[d4_province][d4_stIdx]||DAILY_STATIONS[d4_province][0]];
   const fallback=document.getElementById('dailyFallback');
   fallback.style.display='block';
   fallback.textContent='กำลังโหลดข้อมูล...';
@@ -1236,17 +1249,16 @@ async function renderDailyDrilldown(){
   // KPI
   let kpiHtml='';
   d4_slots.forEach((yr,si)=>{
-    const [bA]=YEAR_SHADES[si]||YEAR_SHADES[2];
+    const yColor=SLOT_COLORS[si];
     stList.forEach((st,sti)=>{
-      const kColor=st.color+bA;
       const vals=slotResults[si][sti]||[];
       const nums=vals.map(d=>d.val!=null?d.val:0);
       const total=nums.reduce((s,v)=>s+v,0);
       const maxV=Math.max(...nums,0);
       const maxDay=labels[nums.indexOf(maxV)]||'—';
       const rainDays=nums.filter(v=>v>0).length;
-      kpiHtml+=`<div class="kpi-card blue" style="border-left:4px solid ${kColor};">
-        <div class="kpi-label" style="color:${kColor};">พ.ศ. ${yr+543}${stList.length>1?' · '+st.label:''}</div>
+      kpiHtml+=`<div class="kpi-card blue" style="border-left:4px solid ${yColor};">
+        <div class="kpi-label" style="color:${yColor};">พ.ศ. ${yr+543}</div>
         <div class="kpi-value">${total.toFixed(1)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./เดือน</span></div>
         <div class="kpi-sub">สูงสุด ${maxV.toFixed(1)} มม. (วันที่ ${maxDay}) · ฝนตก ${rainDays} วัน</div></div>`;
     });
@@ -1267,21 +1279,19 @@ async function renderDailyDrilldown(){
 
   const datasets=[];
   d4_slots.forEach((yr,si)=>{
-    const [bA,fA]=YEAR_SHADES[si]||YEAR_SHADES[2];
-    const yDash=YEAR_DASH[si]||[2,3];
+    const yColor=SLOT_COLORS[si];
     stList.forEach((st,sti)=>{
-      const barLabel=d4_slots.length>1?(stList.length>1?`พ.ศ. ${yr+543} · ${st.label}`:`พ.ศ. ${yr+543}`):st.label;
-      const bColor=st.color+bA; const fColor=st.color+fA;
+      const barLabel=d4_slots.length>1?`พ.ศ. ${yr+543}`:st.label;
       const data=(slotResults[si][sti]||[]).map(d=>d.val!=null?+d.val.toFixed(1):0);
       datasets.push({type:'bar',label:barLabel,data,yAxisID:'y',
-        backgroundColor:fColor,borderColor:bColor,
+        backgroundColor:yColor+'88',borderColor:yColor,
         borderWidth:1.5,borderRadius:3,
         barPercentage:0.8,categoryPercentage:0.9,order:2});
       let cum=0;
       const cumData=data.map(v=>{cum+=v;return +cum.toFixed(1);});
       datasets.push({type:'line',label:`${barLabel} (สะสม)`,data:cumData,yAxisID:'y1',
-        borderColor:bColor,backgroundColor:'transparent',
-        borderWidth:2,borderDash:yDash,pointRadius:2,pointHoverRadius:5,
+        borderColor:yColor,backgroundColor:'transparent',
+        borderWidth:2,borderDash:si===0?[]:[si===1?[5,4]:[3,3]],pointRadius:2,pointHoverRadius:5,
         tension:0.3,order:1});
     });
   });
@@ -1319,10 +1329,10 @@ async function renderDailyDrilldown(){
   // Table
   let tbl=`<table><thead><tr><th>วันที่</th>`;
   d4_slots.forEach((yr,si)=>{
-    const [bA]=YEAR_SHADES[si]||YEAR_SHADES[2];
+    const yColor=SLOT_COLORS[si];
     stList.forEach((st,sti)=>{
-      const hColor=st.color+bA;
-      const lbl=d4_slots.length>1?(stList.length>1?`พ.ศ. ${yr+543} · ${st.label}`:`พ.ศ. ${yr+543}`):`${st.label}`;
+      const hColor=yColor;
+      const lbl=d4_slots.length>1?`พ.ศ. ${yr+543}`:st.label;
       tbl+=`<th style="color:${hColor};">${lbl} (มม.)</th>`;
       tbl+=`<th style="color:${hColor};opacity:0.7;font-weight:500;">สะสม</th>`;
     });
