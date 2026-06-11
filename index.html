@@ -11,6 +11,7 @@
 
 								
 							</style>
+                          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
                         </head>
                         <body>
                             <style>
@@ -97,6 +98,25 @@
   .chart-card{background:#1e293b;border:1px solid #334155;border-radius:16px;padding:20px;}
   .chart-card.full{grid-column:1/-1;}
   .chart-title{font-size:14px;font-weight:700;color:#cbd5e1;margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  /* ─── Daily Map (Leaflet) ─── */
+  .daily-layout{display:grid;grid-template-columns:320px 1fr;gap:16px;margin-bottom:0;}
+  .daily-right{display:flex;flex-direction:column;gap:16px;}
+  @media(max-width:900px){.daily-layout{grid-template-columns:1fr;}}
+  #dailyMap{height:100%;min-height:340px;border-radius:14px;overflow:hidden;}
+  .daily-map-card{background:#1e293b;border:1px solid #334155;border-radius:16px;overflow:hidden;padding:0;}
+  /* Leaflet marker styles */
+  .leaflet-container{background:#0b1827;font-family:Sarabun,sans-serif;}
+  .lf-marker{position:relative;width:28px;height:28px;}
+  .lf-ring{width:28px;height:28px;border-radius:50%;position:absolute;top:0;left:0;border:2px solid;opacity:0;transition:opacity .3s;}
+  .lf-core{width:14px;height:14px;border-radius:50%;position:absolute;top:7px;left:7px;transition:opacity .3s;}
+  .lf-active .lf-ring{animation:lfRing 1.3s ease-out infinite;opacity:1;}
+  .lf-active .lf-core{animation:lfCore 1.3s ease-in-out infinite;}
+  .lf-dimmed .lf-core{opacity:0.3;}
+  .lf-dimmed .lf-ring{opacity:0;}
+  @keyframes lfRing{0%{transform:scale(1);opacity:.8;}100%{transform:scale(3.2);opacity:0;}}
+  @keyframes lfCore{0%,100%{transform:scale(1);}50%{transform:scale(1.4);}}
+  .leaflet-popup-content-wrapper{background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.5);}
+  .leaflet-popup-tip{background:#1e293b;}
 
   /* ══ DONUT LAYOUT ══
      KEY: กำหนด --cell-w เป็น px เดียวกันทั้ง 2 แถว
@@ -211,7 +231,7 @@
     <div class="hero-eyebrow">🌧️ ข้อมูลอุทกวิทยา</div>
     <h1 class="hero-title">Rayong Rainfall Dashboard</h1>
     <div class="hero-meta">
-      <span><span class="dot dot-blue"></span>อัปเดต: 10 มิ.ย. 2569</span>
+      <span><span class="dot dot-blue"></span>อัปเดต: 9 มิ.ย. 2569</span>
       <span><span class="dot dot-amber"></span>📁 ข้อมูล: 2513–2569</span>
       <span><span class="dot dot-rose"></span>📌 ปีล่าสุดที่มีข้อมูล: 2568</span>
     </div>
@@ -230,6 +250,7 @@
   <div class="tabs">
     <button class="tab-btn active" onclick="setScenario(1)">📌 ข้อมูลฝนเปรียบเทียบรายปี</button>
     <button class="tab-btn"        onclick="setScenario(3)">⚖️ ข้อมูลฝนทุกปี</button>
+    <button class="tab-btn"        onclick="setScenario(4)">🌧️ ฝนรายวัน</button>
   </div>
   <div class="control-panel" id="controlPanel">
     <div class="scenario-desc" id="scenarioDesc"></div>
@@ -249,6 +270,29 @@
       <div class="table-wrap" id="tableWrap"></div>
     </div>
   </div>
+  <!-- ═══ DAILY RAINFALL SECTION (scenario 4) ═══ -->
+  <div id="dailySection" style="display:none;">
+    <div class="control-panel" id="dailyControlPanel" style="flex-wrap:wrap;gap:14px;align-items:flex-end;"></div>
+    <div class="daily-layout">
+      <!-- LEFT: Station Map (stretches to match KPI+chart height) -->
+      <div class="daily-map-card">
+        <div id="dailyMap"></div>
+      </div>
+      <!-- RIGHT: KPI + Chart only -->
+      <div class="daily-right">
+        <div class="kpi-row" id="dailyKpiRow" style="margin-bottom:0;"></div>
+        <div class="chart-card" style="flex:1 1 auto;">
+          <div class="chart-title" id="dailyChartTitle"><span>📊</span> ปริมาณน้ำฝนรายวัน <span style="font-size:11px;color:#64748b;font-weight:400;">(มม./วัน)</span></div>
+          <div class="chart-scroll"><canvas id="dailyChart"></canvas><div id="dailyFallback" style="display:none;color:#94a3b8;padding:40px;text-align:center;font-size:14px;">กำลังโหลดข้อมูล...</div></div>
+        </div>
+      </div>
+    </div>
+    <!-- Table: full-width below the map+chart grid -->
+    <div class="chart-card" style="margin-top:16px;">
+      <div class="chart-title"><span>📋</span> ตารางข้อมูลรายวัน <span style="font-size:11px;color:#64748b;font-weight:400;">(มม./วัน)</span></div>
+      <div class="table-wrap" id="dailyTableWrap"></div>
+    </div>
+  </div>
 </div>
 
 <footer class="source-footer">
@@ -256,6 +300,7 @@
 </footer>
 
 <script src="/static/libraries/chart.js/4.5.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>if(!window.Chart){
 /*!
  * Chart.js v4.5.1
@@ -296,22 +341,22 @@ const DATA={
     1970:[6.667,41.233,80.655,78.193,266.012,241.112,185.772,256.651,281.255,137.53,122.869,109.433],
     1971:[2.639,17.5,42.206,92.702,265.914,150.216,131.956,334.606,258.614,228.169,25.054,1.947],
     1972:[0,16.266,36.355,141.253,36.234,198.96,105.367,105.836,357.918,136.204,139.748,46.644],
-    1973:[9.224,10.594,47.96,31.161,193.637,167.819,195.378,170.844,346.309,145.297,72.316,3.096],
+    1973:[9.224,10.594,47.96,31.161,193.636,167.819,195.378,170.844,346.309,145.297,72.316,3.096],
     1974:[8.572,12.354,73.626,192.785,219.538,75.439,132.017,222.513,230.362,499.221,73.918,0.974],
-    1975:[59.005,7.392,30.871,37.745,223.188,180.604,178.24,225.315,214.902,191.25,107.449,15.154],
+    1975:[59.005,7.392,30.871,37.745,223.188,180.604,178.24,225.315,214.902,191.249,107.449,15.154],
     1976:[0,41.729,55.373,77.229,215.502,121.19,236.553,288.692,290.005,328.44,69.002,0.17],
     1977:[7.835,37.364,29.775,68.36,156.801,109.695,195.145,160.577,243.382,190.499,41.455,0.952],
-    1978:[64.111,145.206,18.218,68.223,235.577,218.209,208.244,132.701,368.63,123.533,21.274,0],
+    1978:[64.111,145.206,18.218,68.223,235.577,218.209,208.244,132.7,368.63,123.533,21.274,0],
     1979:[8.027,9.601,2.514,83.095,151.667,168.532,144.075,128.241,293.719,79.363,7.906,6.63],
     1980:[0,13.326,43.136,63.541,67.28,341.464,209.814,245.285,293.945,230.872,40.352,1.224],
     1981:[0.303,44.508,28.577,120.596,231.99,164.5,156.65,147.725,351.217,145.934,187.113,0.429],
-    1982:[0,21.347,77.031,91.288,151.614,313.817,156.025,154.365,233.006,127.969,81.801,24.587],
+    1982:[0,21.347,77.031,91.288,151.614,313.817,156.025,154.366,233.006,127.968,81.801,24.587],
     1983:[0.539,0.189,57.923,9.059,145.188,135.824,214.019,403.903,291.209,356.634,213.347,15.041],
-    1984:[3.864,17.979,37.227,52.474,141.882,225.616,152.23,103.963,229.637,139.532,56.332,0.677],
+    1984:[3.864,17.979,37.227,52.474,141.882,225.616,152.23,103.962,229.637,139.532,56.332,0.677],
     1985:[25.742,25.574,43.096,145.451,266.372,86.761,132.212,103.379,261.613,234.502,95.253,0.499],
     1986:[0.817,16.031,2.179,70.227,222.508,89.671,130.256,151.563,248.503,286.27,33.439,3.47],
     1987:[0,10.644,37.526,55.548,145.776,186.001,89.909,150.351,222.739,306.234,185.767,0],
-    1988:[0.015,26.24,29.305,130.903,260.051,205.75,255.314,225.457,292.607,295.057,20.911,0],
+    1988:[0.015,26.24,29.305,130.903,260.051,205.749,255.314,225.457,292.607,295.057,20.911,0],
     1989:[44.165,40.393,60.026,31.013,104.516,131.032,130.107,186.53,244.001,206.674,37.22,0.726],
     1990:[18.952,5.252,80.239,50.963,191.545,60.774,137.58,108.134,298.456,314.528,35.065,0.34],
     1991:[0.231,19.02,78.756,91.794,173.995,99.103,177.92,146.622,384.903,207.955,2.863,2.049],
@@ -323,41 +368,41 @@ const DATA={
     1997:[33.396,19.07,44.501,67.883,85.741,81.044,72.077,87.196,339.421,182.038,45.777,0],
     1998:[7.225,23.987,31.182,87.877,150.524,152.602,203.994,242.821,198.376,195.136,49.701,7.113],
     1999:[8.415,14.612,88.663,215.339,199.004,101.428,108.012,124.441,212.407,285.603,87.602,0.376],
-    2000:[8.045,68.133,39.305,145.332,162.657,192.526,137.551,133.233,245.751,191.096,9.85,2.727],
+    2000:[8.045,68.133,39.305,145.332,162.657,192.526,137.551,133.233,245.751,191.097,9.85,2.727],
     2001:[19.845,10.859,171.835,62.413,193.94,154.065,70.834,165.608,168.979,232.722,32.374,9.521],
     2002:[5.709,37.474,64.832,91.982,216.962,145.334,113.524,178.906,198.209,109.66,55.92,31.534],
     2003:[0,39.468,204.289,49.642,125.925,192.541,211.436,131.614,248.129,145.167,0.836,0],
     2004:[28.103,42.893,45.693,64.495,136.988,159.307,158.707,138.393,249.994,98.524,5.401,0],
     2005:[28.158,0.593,61.115,100.593,95.691,117.555,102.154,117.448,319.611,149.72,102.882,26.971],
-    2006:[1.123,38.043,72.3,82.297,225.695,143.357,159.292,158.814,333.3,182.538,23.768,3.641],
+    2006:[1.123,38.043,72.3,82.297,225.695,143.357,159.292,158.814,333.299,182.538,23.768,3.641],
     2007:[3.659,11.669,77.531,187.118,272.346,157.25,192.278,75.062,202.418,82.887,21.419,0.027],
     2008:[4.105,48.9,44.337,161.328,126.129,182.09,255.623,168.616,306.769,237.761,33.687,0.244],
-    2009:[0.006,4.955,112.693,120.612,221.141,100.765,148.913,121.481,238.824,185.549,29.482,7.999],
+    2009:[0.006,4.955,112.693,120.612,221.141,100.765,148.913,121.482,238.824,185.549,29.482,7.999],
     2010:[43.111,22.856,46.29,103.387,146.315,201.887,290.906,274.796,249.922,226.415,8.356,3.083],
     2011:[0.007,52.77,101.758,167.272,181.499,169.203,167.352,296.906,306.89,214.836,14.044,1.997],
-    2012:[47.25,29.41,64.938,55.709,161.01,113.283,220.351,105.253,433.415,205.934,76.332,3.109],
+    2012:[47.25,29.41,64.938,55.709,161.01,113.283,220.351,105.253,433.415,205.933,76.332,3.109],
     2013:[79.198,7.054,65.179,94.503,106.553,231.527,210.818,166.316,279.895,342.884,64.15,9.969],
     2014:[0,15.933,37.776,109.368,98.918,159.844,128.349,160.69,234.946,238.629,91.26,10.637],
     2015:[3.707,37.046,67.669,67.241,84.299,161.676,115.561,109.73,355.809,206.636,94.456,26.068],
     2016:[58.551,5.584,17.146,56.172,85.759,159.014,221.736,149.153,249.615,185.611,70.672,2.665],
-    2017:[51.208,4.788,108.781,80.101,334.151,176.517,260.538,140.176,188.209,238.165,68.132,11.599],
+    2017:[51.208,4.788,108.782,80.101,334.151,176.517,260.538,140.176,188.209,238.165,68.132,11.599],
     2018:[103.477,44.292,70.442,220.006,241,127.433,105.446,117.062,340.312,180.923,5.809,21.55],
     2019:[1.972,40.945,32.182,64.977,137.613,121.67,103.346,83.964,218.815,157.451,17.897,1.376],
     2020:[8.026,19.382,54.919,98.877,131.687,227.068,169.679,161.731,251.036,290.968,30.046,6.734],
     2021:[0,26.395,82.412,209.594,117.273,89.931,207.196,202.551,292.812,258.359,69.354,4.059],
     2022:[29.899,72.09,105.06,130.318,136.974,115.971,251.693,248.152,325.36,158.986,114.483,3.646],
     2023:[3.582,26.446,26.971,108.286,69.791,219.357,187.011,47.768,218.829,214.881,49.5,10.063],
-    2024:[1.992,10.728,103.12,26.831,304.236,102.844,218.198,167.824,269.498,186.011,37.741,4.515],
+    2024:[1.992,10.728,103.12,26.831,304.236,102.844,218.199,167.824,269.497,186.011,37.741,4.515],
     2025:[0,36.426,79.491,92.17,352.079,109.623,134.177,151.168,230.157,135.806,78.87,5.423],
     2026:[4.769,40.88,62.01,100.71,null,null,null,null,null,null,null,null]
   },
   '3 อ่าง':{
     1970:[12.405,55.901,104.669,68.284,356.326,141.378,116.871,157.025,321.296,146.46,188.195,151.054],
     1971:[1.248,18.717,55.788,64.189,342.938,79.163,68.43,301.102,248.788,263.092,39.851,1.396],
-    1972:[0,14.924,19.063,182.159,29.018,173.531,66.116,57.431,355.012,131.607,148.113,36.697],
+    1972:[0,14.924,19.063,182.159,29.018,173.531,66.116,57.431,355.012,131.607,148.114,36.697],
     1973:[16.463,21.397,52.751,20.54,183.743,165.53,157.186,96.579,372.492,168.517,82.322,4.735],
     1974:[14.804,5.208,58.742,156.36,253.524,35.4,92.167,148.826,219.611,498.18,74.558,0.63],
-    1975:[66.034,9.206,32.039,29.199,300.645,116.282,127.251,165.697,171.346,240.936,104.522,19.806],
+    1975:[66.034,9.206,32.039,29.199,300.645,116.282,127.252,165.697,171.346,240.936,104.522,19.806],
     1976:[0,36.016,51.841,86.395,247.854,72.126,161.192,229.427,218.716,374.873,63.438,0],
     1977:[14.939,43.905,36.53,41.103,96.972,85.898,207.084,112.403,171.805,247.63,55.603,2.141],
     1978:[75.889,200.226,2.223,57.788,246.025,159.376,171.167,99.307,255.728,136.013,28.843,0],
@@ -368,7 +413,7 @@ const DATA={
     1983:[0.892,0.111,70.264,4.068,129.408,81.469,185.034,371.361,286.642,370.849,290.093,15.369],
     1984:[3.588,15.519,35.264,35.449,98.072,178.357,126.007,47.025,220.966,151.5,64.715,0.031],
     1985:[25.822,35.546,50.707,141.764,292.98,77.185,111.403,81.852,221.117,275.921,92.49,0.162],
-    1986:[2.071,15.914,2.79,68.399,207.956,45.083,117.695,78.784,232.991,289.193,42.17,2.083],
+    1986:[2.071,15.914,2.79,68.399,207.956,45.083,117.694,78.784,232.991,289.193,42.17,2.083],
     1987:[0,14.257,35.041,55.513,128.454,176.601,57.056,119.522,207.133,301.945,195.734,0],
     1988:[0.01,30.404,27.437,127.769,241.102,139.95,240.055,202.615,311.655,299.288,18.923,0],
     1989:[104.441,73.845,69.546,31.301,63.239,63.567,92.793,98.514,254.579,274.934,33.391,1.648],
@@ -378,22 +423,22 @@ const DATA={
     1993:[81.043,22.015,87.66,64.749,138.057,69.662,51.326,128.328,221.793,264.459,45.205,1.265],
     1994:[0,4.961,106.245,36.561,300.098,280.263,60.452,105.856,201.021,82.164,14.077,19.877],
     1995:[26.303,5.319,33.81,58.239,199.192,151.42,214.234,257.105,399.059,227.143,73.464,2.817],
-    1996:[14.016,38.403,67.73,87.711,203.562,335.816,238.362,120.065,335.409,263.125,105.853,2.166],
-    1997:[0.472,26.838,39.949,80.045,104.569,21.661,56.711,39.754,275.988,219.981,77.527,0],
-    1998:[18.901,17.563,7.53,62.293,160.716,166.228,246.231,242.807,262.09,185.028,48.421,20.616],
+    1996:[14.016,38.403,67.73,87.711,203.562,335.816,238.362,120.065,335.409,263.125,105.854,2.166],
+    1997:[0.472,26.838,39.949,80.045,104.569,21.661,56.711,39.754,275.989,219.981,77.527,0],
+    1998:[18.902,17.563,7.53,62.293,160.716,166.228,246.231,242.807,262.09,185.028,48.421,20.616],
     1999:[5.537,13.869,85.024,133.397,247.968,114.554,65.021,110.429,206.857,322.706,83.391,0.177],
     2000:[15.262,33.593,24.862,226.416,81.911,234.958,101.367,76.571,186.467,248.227,8.281,5.801],
     2001:[45.969,9.764,234.841,30.901,183.889,115.841,24.957,170.104,183.373,335.976,47.528,5.698],
-    2002:[3.904,47.844,86.272,54.499,213.038,130.537,94.658,133.123,164.633,144.601,79.236,44.336],
+    2002:[3.904,47.844,86.272,54.499,213.039,130.537,94.658,133.123,164.633,144.601,79.236,44.336],
     2003:[0,27.695,186.699,48.744,104.241,189.626,267.688,84.346,204.631,183.268,3.15,0],
     2004:[39.957,47.573,12.642,53.928,159.767,135.382,101.149,77.607,319.792,141.524,19.355,0],
-    2005:[51.106,0.254,60.485,98.874,82.044,116.698,79.921,79.078,258.048,209.706,64.013,38.58],
+    2005:[51.106,0.254,60.485,98.874,82.044,116.699,79.921,79.078,258.048,209.706,64.013,38.58],
     2006:[1.927,56.338,45.84,69.865,230.281,159.315,102.941,105.594,282.522,132.2,38.922,9.27],
     2007:[8.349,4.213,23.826,113.92,296.827,161.337,162.037,80.874,177.977,87.326,35.871,0.12],
     2008:[0.794,63.149,35.89,95.587,80.404,207.923,227.926,85.008,216.984,252.939,38.122,0.001],
     2009:[0,10.103,65.208,141.725,241.829,77.407,138.381,97.708,190.927,240.675,16.375,9.924],
     2010:[57.955,10.439,39.957,77.989,134.423,250.479,233.41,269.301,227.613,210.778,18.852,8.826],
-    2011:[0.03,92.262,113.283,161.32,118.528,178.334,132.03,259.143,228.697,285.442,18.384,0.873],
+    2011:[0.03,92.262,113.283,161.32,118.528,178.334,132.03,259.143,228.697,285.441,18.384,0.873],
     2012:[37.911,62.336,33.913,25.201,177.078,100.211,176.555,67.037,392.584,210.79,131.611,3.901],
     2013:[136.954,4.735,38.994,108.686,96.414,219.892,173.37,126.846,118.084,398.886,93.962,7.813],
     2014:[0,37.342,17.387,48.569,84.55,124.659,61.046,124.467,153.173,306.161,113.151,17.504],
@@ -404,9 +449,9 @@ const DATA={
     2019:[9.743,18.767,40.643,53.996,144.146,142.681,47.445,50.02,217.429,220.88,24.517,3.926],
     2020:[14.964,12.179,20.541,123.261,99.739,287.928,166.195,104.179,337.767,364.477,36.855,13.414],
     2021:[0,41.44,67.366,184.426,197.909,94.345,210.328,244.814,399.497,260.262,108.465,8.47],
-    2022:[41.468,83.083,88.809,83.67,119.245,158.79,204.358,231.144,436.676,207.029,148.293,2.25],
+    2022:[41.468,83.083,88.809,83.67,119.244,158.79,204.358,231.144,436.676,207.029,148.293,2.25],
     2023:[9.348,34.172,11.198,67.017,63.381,171.928,228.253,30.382,141.398,240.28,53.126,18.753],
-    2024:[8.579,18.98,63.499,6.002,316.952,49.259,242.629,203.758,278.053,232.21,66.854,0.56],
+    2024:[8.579,18.98,63.499,6.002,316.952,49.259,242.629,203.758,278.052,232.21,66.854,0.56],
     2025:[0,45.224,62.607,63.803,394.665,58.921,68.091,112.995,274.536,173.204,101.549,0.561],
     2026:[2.955,62.38,99.65,35.49,null,null,null,null,null,null,null,null]
   }
@@ -757,17 +802,474 @@ function renderScenario3(){
 
 function setScenario(n){
   scenario=n;
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',[1,3][i]===n));
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',[1,3,4][i]===n));
+  // show/hide main sections
+  const mainSections=['controlPanel','kpiRow'];
+  const chartsGrid=document.querySelector('.charts-grid');
+  const dailySec=document.getElementById('dailySection');
+  if(n===4){
+    mainSections.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+    if(chartsGrid)chartsGrid.style.display='none';
+    if(dailySec)dailySec.style.display='block';
+      setTimeout(()=>{initDailyMap();updateMapPulse(d4_province);},80);
+  } else {
+    mainSections.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='';});
+    if(chartsGrid)chartsGrid.style.display='';
+    if(dailySec)dailySec.style.display='none';
+  }
   renderAll();
 }
 function renderAll(){
+  if(scenario===4){renderScenario4();return;}
   renderControls();
   if(scenario===1) renderScenario1();
   else              renderScenario3();
 }
+
+/* ════════════════════════════════════════════════════════
+   SCENARIO 4 — ฝนรายวัน (Daily Rainfall)
+   Stations:
+     ชลบุรี  → 111   (อบต.บ่อทอง)       เริ่ม พ.ค. 2557
+     ระยอง   → 1109580 (อบต.ปลวกแดง)    เริ่ม พ.ย. 2565
+     จันทบุรี→ 128 (แก่งหางแมว)         เริ่ม พ.ย. 2558
+               129 (อบต.ขุนซ่อง)         เริ่ม ก.ค. 2557
+   ════════════════════════════════════════════════════════ */
+// ─── Daily Map (Leaflet) ─────────────────────────────────────
+// ── SVG Map (self-contained, no CDN) ────────────────────────────────────
+const STATION_MAP_DATA={
+  111:     {lat:13.2417,   lng:101.48823, label:'อบต.บ่อทอง',  prov:'ชลบุรี',   color:'#38bdf8'},
+  1109580: {lat:12.970118, lng:101.20457, label:'อบต.ปลวกแดง', prov:'ระยอง',    color:'#34d399'},
+  129:     {lat:13.074,    lng:101.937584,label:'อบต.ขุนซ่อง', prov:'จันทบุรี', color:'#38bdf8'},
+  128:     {lat:12.986792, lng:101.89965, label:'แก่งหางแมว',  prov:'จันทบุรี', color:'#fbbf24'}
+};
+
+// SVG coordinate helpers (viewBox 0 0 300 480)
+// lng 100.3–103.1 → x 0–300  | lat 14.5–11.3 → y 0–480
+function _lx(lng){ return (lng - 100.3) * 107.14; }
+function _ly(lat){ return (14.5 - lat) * 150.0; }
+
+let d4_leafletMap = null;
+let d4_leafletMarkers = {};   // stationId → {marker, prov, color}
+
+function initDailyMap(){
+  if(d4_leafletMap) return;
+  const mapEl = document.getElementById('dailyMap');
+  if(!mapEl || typeof L === 'undefined') return;
+
+  d4_leafletMap = L.map(mapEl, {
+    center: [13.0, 101.65],
+    zoom: 8,
+    zoomControl: true,
+    attributionControl: false
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18, opacity: 0.88
+  }).addTo(d4_leafletMap);
+
+  L.control.attribution({prefix: '© OpenStreetMap'}).addTo(d4_leafletMap);
+
+  // Add station markers
+  Object.entries(STATION_MAP_DATA).forEach(([id, st]) => {
+    const icon = L.divIcon({
+      className: '',
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
+      html: `<div class="lf-marker" data-id="${id}">
+        <div class="lf-ring" style="border-color:${st.color};background:${st.color}22;"></div>
+        <div class="lf-core" style="background:${st.color};box-shadow:0 0 0 2.5px #fff,0 2px 6px rgba(0,0,0,.5);"></div>
+      </div>`
+    });
+    const marker = L.marker([st.lat, st.lng], { icon })
+      .addTo(d4_leafletMap)
+      .bindPopup(`<div style="font-family:Sarabun,sans-serif;min-width:110px;font-size:13px;">
+        <b style="color:${st.color}">${st.label}</b><br>
+        <span style="color:#64748b">${st.prov}</span>
+      </div>`, { maxWidth: 180 });
+    marker.on('mouseover', function(){ this.openPopup(); });
+    d4_leafletMarkers[id] = { marker, prov: st.prov, color: st.color };
+  });
+}
+
+function updateMapPulse(prov){
+  if(!d4_leafletMap) return;
+  Object.entries(d4_leafletMarkers).forEach(([id, obj]) => {
+    const el = obj.marker.getElement();
+    if(!el) return;
+    const wrap = el.querySelector('.lf-marker');
+    const ring = el.querySelector('.lf-ring');
+    const core = el.querySelector('.lf-core');
+    if(!wrap) return;
+    if(obj.prov === prov){
+      wrap.classList.add('lf-active');
+      wrap.classList.remove('lf-dimmed');
+    } else {
+      wrap.classList.remove('lf-active');
+      wrap.classList.add('lf-dimmed');
+    }
+  });
+}
+
+const DAILY_STATIONS={
+  'ชลบุรี':[{id:111,label:'อบต.บ่อทอง',color:'#38bdf8',startYear:2014,startMonth:5}],
+  'ระยอง':  [{id:1109580,label:'อบต.ปลวกแดง',color:'#34d399',startYear:2022,startMonth:11}],
+  'จันทบุรี':[
+    {id:129,label:'อบต.ขุนซ่อง',color:'#38bdf8',startYear:2014,startMonth:7},
+    {id:128,label:'แก่งหางแมว',color:'#fbbf24',startYear:2015,startMonth:11}
+  ]
+};
+const DAILY_PROVINCES=Object.keys(DAILY_STATIONS);
+let d4_province='ระยอง';
+let d4_year=new Date().getFullYear();
+let d4_month=null;          // null=monthly overview; 1–12=daily drill-down
+let d4_chartInst=null;
+let d4_cache={};             // "stid_YYYY_MM" → daily data array
+
+const TH_MONTHS_FULL=['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+  'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const TH_MONTHS_SHORT=['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+
+function d4YearOptions(stList){
+  // Use the latest start constraints across all stations in the province
+  const minYear=Math.max(...stList.map(s=>s.startYear));
+  const curYear=new Date().getFullYear();
+  let html='';
+  for(let y=curYear;y>=minYear;y--){
+    html+=`<option value="${y}"${y===d4_year?' selected':''}>${y+543}</option>`;
+  }
+  return html;
+}
+
+
+async function fetchDailyData(stId,year,month){
+  const key=`${stId}_${year}_${String(month).padStart(2,'0')}`;
+  if(d4_cache[key]) return d4_cache[key];
+  const url=`https://api-v3.thaiwater.net/api/v1/thaiwater30/public/rain_monthly_graph?station_id=${stId}&month=${String(month).padStart(2,'0')}&year=${year}`;
+  try{
+    const r=await fetch(url);
+    const j=await r.json();
+    const data=(j.data||[]).map(d=>({date:d.rainfall_datetime,val:d.rainfall_value}));
+    d4_cache[key]=data;
+    return data;
+  }catch(e){return[];}
+}
+
+function renderDailyControls(){
+  const cp=document.getElementById('dailyControlPanel');
+  const stList=DAILY_STATIONS[d4_province];
+  const btnBase='padding:8px 16px;border-radius:8px;border:1px solid #475569;background:#0f172a;color:#94a3b8;cursor:pointer;font-family:Sarabun,sans-serif;font-size:13px;';
+  const btnActive='padding:8px 16px;border-radius:8px;border:1px solid #0ea5e9;background:#0c4a6e;color:#7dd3fc;cursor:pointer;font-family:Sarabun,sans-serif;font-size:13px;font-weight:600;';
+
+  let drillBtn = '';
+  if(d4_month!==null){
+    drillBtn=`<button onclick="d4Back()" style="${btnActive}">← ภาพรวมรายปี</button>
+    <span style="color:#38bdf8;font-size:13px;font-weight:600;padding:0 4px;">${TH_MONTHS_FULL[d4_month]} พ.ศ. ${d4_year+543}</span>`;
+  }
+
+  cp.innerHTML=`
+    <div class="ctrl-group"><label>🗺️ จังหวัด</label>
+      <select id="d4prov">${DAILY_PROVINCES.map(p=>`<option value="${p}"${p===d4_province?' selected':''}>${p}</option>`).join('')}</select>
+    </div>
+    <div class="ctrl-divider"></div>
+    <div class="ctrl-group"><label>📅 ปี พ.ศ.</label>
+      <select id="d4year">${d4YearOptions(stList)}</select>
+    </div>
+    ${drillBtn}
+    <div class="scenario-desc"><strong>🌧️ ฝนรายวัน</strong>${DAILY_STATIONS[d4_province].map(s=>s.label).join(' · ')}</div>`;
+  document.getElementById('d4prov').addEventListener('change',e=>{d4_province=e.target.value;d4_month=null;renderScenario4();updateMapPulse(d4_province);});
+  document.getElementById('d4year').addEventListener('change',e=>{d4_year=+e.target.value;d4_month=null;renderScenario4();});
+}
+
+function d4Back(){
+  d4_month=null;
+  renderScenario4();
+}
+
+async function renderScenario4(){
+  renderDailyControls();
+  if(d4_month===null){
+    await renderMonthlyOverview();
+  } else {
+    await renderDailyDrilldown();
+  }
+}
+
+// ── Monthly overview: 12-bar chart, clickable to drill down ──────────────
+async function renderMonthlyOverview(){
+  const stList=DAILY_STATIONS[d4_province];
+  const fallback=document.getElementById('dailyFallback');
+  fallback.style.display='block';
+  fallback.textContent='กำลังโหลดข้อมูลทั้งปี...';
+
+  const now=new Date();
+  const maxMonth=(d4_year===now.getFullYear())?now.getMonth()+1:12;
+
+  // Fetch all months in parallel for all stations
+  const allFetches=stList.map(st=>
+    Promise.all(Array.from({length:maxMonth},(_,i)=>fetchDailyData(st.id,d4_year,i+1)))
+  );
+  const stationResults=await Promise.all(allFetches);
+
+  // Aggregate monthly totals
+  const monthTotals=stList.map((st,si)=>
+    Array.from({length:maxMonth},(_,mi)=>{
+      const data=stationResults[si][mi]||[];
+      return parseFloat(data.reduce((s,d)=>s+(d.val||0),0).toFixed(1));
+    })
+  );
+  const monthRainDays=stList.map((st,si)=>
+    Array.from({length:maxMonth},(_,mi)=>{
+      const data=stationResults[si][mi]||[];
+      return data.filter(d=>d.val>0).length;
+    })
+  );
+
+  // KPI: annual summary per station
+  let kpiHtml='';
+  stList.forEach((st,si)=>{
+    const totals=monthTotals[si];
+    const annualTotal=totals.reduce((s,v)=>s+v,0).toFixed(1);
+    const peakIdx=totals.indexOf(Math.max(...totals));
+    const peakMon=TH_MONTHS_SHORT[peakIdx+1]||'—';
+    const peakVal=totals[peakIdx]||0;
+    const rainMonths=totals.filter(v=>v>0).length;
+    kpiHtml+=`<div class="kpi-card blue" style="border-left:4px solid ${st.color};">
+      <div class="kpi-label" style="color:${st.color};">${st.label}</div>
+      <div class="kpi-value">${annualTotal} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./ปี</span></div>
+      <div class="kpi-sub">สูงสุด ${peakVal} มม. (${peakMon}) · ${rainMonths} เดือนที่มีฝน</div></div>`;
+  });
+  document.getElementById('dailyKpiRow').innerHTML=kpiHtml;
+
+  // Chart title
+  document.getElementById('dailyChartTitle').innerHTML=
+    `<span>📊</span> ปริมาณน้ำฝนรายเดือน — ${d4_province}
+     <span style="font-size:12px;color:#64748b;font-weight:400;">พ.ศ. ${d4_year+543}</span>
+     <span style="font-size:11px;color:#475569;font-weight:400;margin-left:8px;">คลิกแท่งเพื่อดูรายวัน</span>`;
+
+  if(!window.Chart){fallback.textContent='Chart.js ไม่พร้อมใช้งาน';return;}
+  fallback.style.display='none';
+  if(d4_chartInst)d4_chartInst.destroy();
+  const ctx=document.getElementById('dailyChart').getContext('2d');
+  const labels=TH_MONTHS_SHORT.slice(1,maxMonth+1);
+
+  // Build bar + cumulative line datasets
+  const datasets=[];
+  stList.forEach((st,si)=>{
+    datasets.push({
+      type:'bar', label:st.label, data:monthTotals[si], yAxisID:'y',
+      backgroundColor:st.color+'88', borderColor:st.color,
+      borderWidth:1.5, borderRadius:4,
+      barPercentage:stList.length===1?0.55:0.75, categoryPercentage:0.85,
+      hoverBackgroundColor:st.color+'cc', order:2
+    });
+    let cum=0;
+    const cumData=monthTotals[si].map(v=>{cum+=v;return +cum.toFixed(1);});
+    datasets.push({
+      type:'line', label:`${st.label} (สะสม)`, data:cumData, yAxisID:'y1',
+      borderColor:st.color, backgroundColor:'transparent',
+      borderWidth:2, borderDash:[5,4], pointRadius:3, pointHoverRadius:6,
+      tension:0.35, order:1
+    });
+  });
+
+  d4_chartInst=new Chart(ctx,{
+    type:'bar', data:{labels,datasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      onClick(_,elements){
+        if(!elements.length)return;
+        const monthIdx=elements[0].index;
+        d4_month=monthIdx+1;
+        renderScenario4();
+      },
+      plugins:{
+        legend:{labels:{color:'#94a3b8',font:{family:'Sarabun',size:12}}},
+        tooltip:{
+          backgroundColor:'#1e293b',borderColor:'#334155',borderWidth:1,
+          titleColor:'#e2e8f0',bodyColor:'#94a3b8',
+          callbacks:{
+            title:items=>`${TH_MONTHS_FULL[+items[0].label.replace(/[^0-9]/g,'')||0]||items[0].label} พ.ศ. ${d4_year+543}`,
+            label:c=>{
+              const isCum=c.dataset.label.includes('สะสม');
+              return `${c.dataset.label}: ${c.parsed.y.toFixed(1)} มม.${isCum?' (รวม)':''}`;
+            },
+            afterBody:items=>{
+              const mIdx=items[0].index;
+              return stList.map((st,si)=>`  ฝนตก ${monthRainDays[si][mIdx]} วัน`);
+            }
+          }
+        }
+      },
+      scales:{
+        x:{ticks:{color:'#64748b',font:{family:'Sarabun',size:12}},grid:{color:'rgba(51,65,85,0.4)'},
+           title:{display:true,text:'เดือน',color:'#64748b',font:{family:'Sarabun',size:11}}},
+        y:{position:'left',ticks:{color:'#94a3b8',font:{family:'Sarabun',size:11},callback:v=>v+' มม.'},
+           grid:{color:'rgba(51,65,85,0.4)'},
+           title:{display:true,text:'ฝนรายเดือน (มม.)',color:'#64748b',font:{family:'Sarabun',size:11}},min:0},
+        y1:{position:'right',ticks:{color:'#64748b',font:{family:'Sarabun',size:11},callback:v=>v+' มม.'},
+            grid:{drawOnChartArea:false},
+            title:{display:true,text:'ฝนสะสม (มม.)',color:'#64748b',font:{family:'Sarabun',size:11}},min:0}
+      },
+      cursor:'pointer'
+    }
+  });
+
+  // Monthly summary table
+  let tbl=`<table><thead><tr><th>เดือน</th>`;
+  stList.forEach(st=>{
+    tbl+=`<th style="color:${st.color};">${st.label} (มม.)</th>`;
+    tbl+=`<th style="color:${st.color};opacity:0.7;font-weight:500;">สะสม (มม.)</th>`;
+  });
+  tbl+=`</tr></thead><tbody>`;
+  const cumuls=stList.map(()=>0);
+  const totals=stList.map(()=>0);
+  for(let mi=0;mi<maxMonth;mi++){
+    const monName=TH_MONTHS_FULL[mi+1]||`เดือน ${mi+1}`;
+    const anyRain=stList.some((_,si)=>monthTotals[si][mi]>0);
+    tbl+=`<tr${anyRain?' style="background:rgba(56,189,248,0.05);"':''}>`;
+    tbl+=`<td style="font-weight:700;color:#7dd3fc;">${monName}</td>`;
+    stList.forEach((_,si)=>{
+      const v=monthTotals[si][mi];
+      totals[si]+=v;
+      cumuls[si]+=v;
+      tbl+=`<td>${v.toFixed(1)}</td>`;
+      tbl+=`<td style="color:#64748b;font-size:11px;">${cumuls[si].toFixed(1)}</td>`;
+    });
+    tbl+=`</tr>`;
+  }
+  tbl+=`<tr style="background:#0f172a;font-weight:700;border-top:2px solid #334155;"><td style="color:#7dd3fc;">รวม</td>`;
+  totals.forEach(t=>{
+    tbl+=`<td style="color:#38bdf8;">${t.toFixed(1)}</td>`;
+    tbl+=`<td style="color:#38bdf8;">${t.toFixed(1)}</td>`;
+  });
+  tbl+=`</tr></tbody></table>`;
+  document.getElementById('dailyTableWrap').innerHTML=tbl;
+}
+
+// ── Daily drill-down: show daily bars for selected month ─────────────────
+async function renderDailyDrilldown(){
+  const stList=DAILY_STATIONS[d4_province];
+  const fallback=document.getElementById('dailyFallback');
+  fallback.style.display='block';
+  fallback.textContent='กำลังโหลดข้อมูล...';
+
+  const results=await Promise.all(stList.map(st=>fetchDailyData(st.id,d4_year,d4_month)));
+
+  const allDates=results[0]&&results[0].length>0
+    ? results[0].map(d=>d.date)
+    : Array.from({length:31},(_,i)=>String(i+1).padStart(2,'0'));
+  const labels=allDates.map(d=>`${+d.split('-')[2]}`);
+
+  // KPI
+  let kpiHtml='';
+  stList.forEach((st,i)=>{
+    const vals=results[i]||[];
+    const nums=vals.map(d=>d.val!=null?d.val:0);
+    const total=nums.reduce((s,v)=>s+v,0);
+    const maxV=Math.max(...nums,0);
+    const maxDay=labels[nums.indexOf(maxV)]||'—';
+    const rainDays=nums.filter(v=>v>0).length;
+    kpiHtml+=`<div class="kpi-card blue" style="border-left:4px solid ${st.color};">
+      <div class="kpi-label" style="color:${st.color};">${st.label}</div>
+      <div class="kpi-value">${total.toFixed(1)} <span style="font-size:13px;font-weight:400;color:#94a3b8;">มม./เดือน</span></div>
+      <div class="kpi-sub">สูงสุด ${maxV.toFixed(1)} มม. (วันที่ ${maxDay}) · ฝนตก ${rainDays} วัน</div></div>`;
+  });
+  document.getElementById('dailyKpiRow').innerHTML=kpiHtml;
+
+  document.getElementById('dailyChartTitle').innerHTML=
+    `<span style="display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <button onclick="d4Back()" style="padding:5px 12px;border-radius:8px;border:1px solid #0ea5e9;background:#0c4a6e;color:#7dd3fc;cursor:pointer;font-family:Sarabun,sans-serif;font-size:12px;font-weight:600;line-height:1.4;">← ภาพรวมรายปี</button>
+      <span>📊 ปริมาณน้ำฝนรายวัน — ${d4_province}</span>
+      <span style="font-size:12px;color:#64748b;font-weight:400;">${TH_MONTHS_FULL[d4_month]} พ.ศ. ${d4_year+543}</span>
+    </span>`;
+
+  if(!window.Chart){fallback.textContent='Chart.js ไม่พร้อมใช้งาน';return;}
+  fallback.style.display='none';
+  if(d4_chartInst)d4_chartInst.destroy();
+  const ctx=document.getElementById('dailyChart').getContext('2d');
+
+  // Build bar datasets + cumulative line datasets
+  const datasets=[];
+  stList.forEach((st,i)=>{
+    const data=(results[i]||[]).map(d=>d.val!=null?+d.val.toFixed(1):0);
+    // bar
+    datasets.push({type:'bar',label:st.label,data,yAxisID:'y',
+      backgroundColor:st.color+'88',borderColor:st.color,
+      borderWidth:1.5,borderRadius:3,
+      barPercentage:stList.length===1?0.6:0.8,categoryPercentage:0.9,order:2});
+    // cumulative line
+    let cum=0;
+    const cumData=data.map(v=>{cum+=v;return +cum.toFixed(1);});
+    datasets.push({type:'line',label:`${st.label} (สะสม)`,data:cumData,yAxisID:'y1',
+      borderColor:st.color,backgroundColor:'transparent',
+      borderWidth:2,borderDash:[4,3],pointRadius:2,pointHoverRadius:5,
+      tension:0.3,order:1});
+  });
+
+  d4_chartInst=new Chart(ctx,{type:'bar',data:{labels,datasets},options:{
+    responsive:true,maintainAspectRatio:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{
+      legend:{labels:{color:'#94a3b8',font:{family:'Sarabun',size:12},
+        filter:item=>true}},
+      tooltip:{backgroundColor:'#1e293b',borderColor:'#334155',borderWidth:1,
+        titleColor:'#e2e8f0',bodyColor:'#94a3b8',
+        callbacks:{
+          title:items=>`วันที่ ${items[0].label} ${TH_MONTHS_SHORT[d4_month]} พ.ศ. ${d4_year+543}`,
+          label:c=>{
+            const isCum=c.dataset.label.includes('สะสม');
+            return `${c.dataset.label}: ${c.parsed.y.toFixed(1)} มม.${isCum?' (รวม)':''}`;
+          }
+        }}
+    },
+    scales:{
+      x:{ticks:{color:'#64748b',font:{family:'Sarabun',size:11},maxRotation:0},
+         grid:{color:'rgba(51,65,85,0.5)'},
+         title:{display:true,text:'วันที่',color:'#64748b',font:{family:'Sarabun',size:11}}},
+      y:{position:'left',ticks:{color:'#94a3b8',font:{family:'Sarabun',size:11},callback:v=>v+' มม.'},
+         grid:{color:'rgba(51,65,85,0.4)'},
+         title:{display:true,text:'ฝนรายวัน (มม.)',color:'#64748b',font:{family:'Sarabun',size:11}},min:0},
+      y1:{position:'right',ticks:{color:'#64748b',font:{family:'Sarabun',size:11},callback:v=>v+' มม.'},
+          grid:{drawOnChartArea:false},
+          title:{display:true,text:'ฝนสะสม (มม.)',color:'#64748b',font:{family:'Sarabun',size:11}},min:0}
+    }
+  }});
+
+  // Table — with cumulative column per station
+  let tbl=`<table><thead><tr><th>วันที่</th>`;
+  stList.forEach(st=>{
+    tbl+=`<th style="color:${st.color};">${st.label} (มม.)</th>`;
+    tbl+=`<th style="color:${st.color};opacity:0.7;font-weight:500;">สะสม (มม.)</th>`;
+  });
+  tbl+=`</tr></thead><tbody>`;
+  let totals=stList.map(()=>0);
+  let cumuls=stList.map(()=>0);
+  allDates.forEach((date,i)=>{
+    const dayStr=date?date.replace(/-/g,'/').substring(5):'—';
+    const vals=stList.map((_,si)=>results[si]&&results[si][i]?results[si][i].val:null);
+    const anyRain=vals.some(v=>v!=null&&v>0);
+    tbl+=`<tr${anyRain?' style="background:rgba(56,189,248,0.05);"':''}>`;
+    tbl+=`<td style="font-weight:700;color:#7dd3fc;">${dayStr}</td>`;
+    vals.forEach((v,si)=>{
+      totals[si]+=(v||0);
+      cumuls[si]=totals[si];
+      tbl+=`<td>${v!=null?v.toFixed(1):'—'}</td>`;
+      tbl+=`<td style="color:#64748b;font-size:11px;">${cumuls[si].toFixed(1)}</td>`;
+    });
+    tbl+=`</tr>`;
+  });
+  tbl+=`<tr style="background:#0f172a;font-weight:700;border-top:2px solid #334155;"><td style="color:#7dd3fc;">รวม</td>`;
+  totals.forEach(t=>{
+    tbl+=`<td style="color:#38bdf8;">${t.toFixed(1)}</td>`;
+    tbl+=`<td style="color:#38bdf8;">${t.toFixed(1)}</td>`;
+  });
+  tbl+=`</tr></tbody></table>`;
+  document.getElementById('dailyTableWrap').innerHTML=tbl;
+}
 renderHeaderStats();
 renderAll();
-let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(renderAll,150);});
+let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(scenario!==4)renderAll();},150);});
 </script>
 
 							<script>
