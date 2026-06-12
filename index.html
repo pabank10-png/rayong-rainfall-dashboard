@@ -908,15 +908,13 @@ function updateMapPulse(prov){
     const el = obj.marker.getElement();
     if(!el) return;
     const wrap = el.querySelector('.lf-marker');
-    const ring = el.querySelector('.lf-ring');
-    const core = el.querySelector('.lf-core');
     if(!wrap) return;
     if(obj.prov === prov && parseInt(id)===activeSt.id){
       wrap.classList.add('lf-active');
       wrap.classList.remove('lf-dimmed');
-    } else if(obj.prov === prov){
+    } else {
       wrap.classList.remove('lf-active');
-      wrap.classList.remove('lf-dimmed');
+      wrap.classList.add('lf-dimmed');
     }
   });
 }
@@ -925,7 +923,7 @@ const DAILY_STATIONS={
   'ชลบุรี':[{id:111,label:'อบต.บ่อทอง',color:'#38bdf8',startYear:2014,startMonth:5}],
   'ระยอง':  [{id:1109580,label:'อบต.ปลวกแดง',color:'#34d399',startYear:2022,startMonth:11}],
   'จันทบุรี':[
-    {id:129,label:'อบต.ขุนซ่อง',color:'#38bdf8',startYear:2014,startMonth:7},
+    {id:129,label:'อบต.ขุนซ่อง',color:'#a78bfa',startYear:2014,startMonth:7},
     {id:128,label:'แก่งหางแมว',color:'#fbbf24',startYear:2015,startMonth:11}
   ]
 };
