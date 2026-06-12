@@ -298,7 +298,7 @@
 </div>
 
 <footer class="source-footer">
-  Data source: Hydro-Informatics Institute (HII) / TISERVICE, mRainAmp_TISERVICE (MEAN_OBS). Dashboard visualization generated from public rainfall API data.
+  Data source: Hydro-Informatics Institute (HII) / TISERVICE, mRainAmp_TISERVICE (MEAN_OBS); HII Rainfall Station API (data.hii.or.th). Dashboard visualization generated from public rainfall API data.
 </footer>
 
 <script src="/static/libraries/chart.js/4.5.1/chart.umd.js"></script>
@@ -902,6 +902,8 @@ function initDailyMap(){
 
 function updateMapPulse(prov){
   if(!d4_leafletMap) return;
+  const allSt=DAILY_STATIONS[prov];
+  const activeSt=allSt[d4_stIdx]||allSt[0];
   Object.entries(d4_leafletMarkers).forEach(([id, obj]) => {
     const el = obj.marker.getElement();
     if(!el) return;
@@ -909,12 +911,12 @@ function updateMapPulse(prov){
     const ring = el.querySelector('.lf-ring');
     const core = el.querySelector('.lf-core');
     if(!wrap) return;
-    if(obj.prov === prov){
+    if(obj.prov === prov && parseInt(id)===activeSt.id){
       wrap.classList.add('lf-active');
       wrap.classList.remove('lf-dimmed');
-    } else {
+    } else if(obj.prov === prov){
       wrap.classList.remove('lf-active');
-      wrap.classList.add('lf-dimmed');
+      wrap.classList.remove('lf-dimmed');
     }
   });
 }
@@ -1047,6 +1049,7 @@ function setD4Station(idx){
   d4_stIdx=idx;
   d4_month=null;
   renderScenario4();
+  updateMapPulse(d4_province);
 }
 
 async function renderScenario4(){
@@ -1092,7 +1095,9 @@ async function renderMonthlyOverview(){
   let kpiHtml='';
   d4_slots.forEach((yr,si)=>{
     const sd=slotData[si];
-    const yColor=SLOT_COLORS[si];
+    const stColor=(DAILY_STATIONS[d4_province][d4_stIdx]||DAILY_STATIONS[d4_province][0]).color;
+    const otherColors=SLOT_COLORS.filter(c=>c!==stColor);
+    const yColor=si===0?stColor:(otherColors[si-1]||SLOT_COLORS[si]);
     stList.forEach((st,sti)=>{
       const totals=sd.monthTotals[sti];
       const annualTotal=totals.reduce((s,v)=>s+v,0).toFixed(1);
@@ -1123,7 +1128,9 @@ async function renderMonthlyOverview(){
   const datasets=[];
   d4_slots.forEach((yr,si)=>{
     const sd=slotData[si];
-    const yColor=SLOT_COLORS[si];
+    const stColor=(DAILY_STATIONS[d4_province][d4_stIdx]||DAILY_STATIONS[d4_province][0]).color;
+    const otherColors=SLOT_COLORS.filter(c=>c!==stColor);
+    const yColor=si===0?stColor:(otherColors[si-1]||SLOT_COLORS[si]);
     stList.forEach((st,sti)=>{
       const barLabel=d4_slots.length>1?`พ.ศ. ${yr+543}`:st.label;
       const data=[...sd.monthTotals[sti],...Array(maxMonth-sd.maxMonth).fill(null)];
@@ -1188,7 +1195,9 @@ async function renderMonthlyOverview(){
   // Monthly summary table
   let tbl=`<table><thead><tr><th>เดือน</th>`;
   d4_slots.forEach((yr,si)=>{
-    const yColor=SLOT_COLORS[si];
+    const stColor=(DAILY_STATIONS[d4_province][d4_stIdx]||DAILY_STATIONS[d4_province][0]).color;
+    const otherColors=SLOT_COLORS.filter(c=>c!==stColor);
+    const yColor=si===0?stColor:(otherColors[si-1]||SLOT_COLORS[si]);
     stList.forEach((st,sti)=>{
       const hColor=yColor;
       const lbl=d4_slots.length>1?`พ.ศ. ${yr+543}`:st.label;
@@ -1249,7 +1258,9 @@ async function renderDailyDrilldown(){
   // KPI
   let kpiHtml='';
   d4_slots.forEach((yr,si)=>{
-    const yColor=SLOT_COLORS[si];
+    const stColor=(DAILY_STATIONS[d4_province][d4_stIdx]||DAILY_STATIONS[d4_province][0]).color;
+    const otherColors=SLOT_COLORS.filter(c=>c!==stColor);
+    const yColor=si===0?stColor:(otherColors[si-1]||SLOT_COLORS[si]);
     stList.forEach((st,sti)=>{
       const vals=slotResults[si][sti]||[];
       const nums=vals.map(d=>d.val!=null?d.val:0);
@@ -1279,7 +1290,9 @@ async function renderDailyDrilldown(){
 
   const datasets=[];
   d4_slots.forEach((yr,si)=>{
-    const yColor=SLOT_COLORS[si];
+    const stColor=(DAILY_STATIONS[d4_province][d4_stIdx]||DAILY_STATIONS[d4_province][0]).color;
+    const otherColors=SLOT_COLORS.filter(c=>c!==stColor);
+    const yColor=si===0?stColor:(otherColors[si-1]||SLOT_COLORS[si]);
     stList.forEach((st,sti)=>{
       const barLabel=d4_slots.length>1?`พ.ศ. ${yr+543}`:st.label;
       const data=(slotResults[si][sti]||[]).map(d=>d.val!=null?+d.val.toFixed(1):0);
@@ -1329,7 +1342,9 @@ async function renderDailyDrilldown(){
   // Table
   let tbl=`<table><thead><tr><th>วันที่</th>`;
   d4_slots.forEach((yr,si)=>{
-    const yColor=SLOT_COLORS[si];
+    const stColor=(DAILY_STATIONS[d4_province][d4_stIdx]||DAILY_STATIONS[d4_province][0]).color;
+    const otherColors=SLOT_COLORS.filter(c=>c!==stColor);
+    const yColor=si===0?stColor:(otherColors[si-1]||SLOT_COLORS[si]);
     stList.forEach((st,sti)=>{
       const hColor=yColor;
       const lbl=d4_slots.length>1?`พ.ศ. ${yr+543}`:st.label;
