@@ -353,14 +353,22 @@ git push origin main
 
 ก่อนแก้:
 
-1. เช็กสถานะ git
+1. อ่านไฟล์ KM นี้ก่อนทุกครั้ง เพื่อเช็ก context ล่าสุด แหล่งข้อมูล path และข้อควรระวัง
+
+```bash
+open KM_Rayong_Rainfall_Dashboard.md
+```
+
+หรือเปิดอ่านใน editor ที่ใช้งานอยู่
+
+2. เช็กสถานะ git
 
 ```bash
 git status --short
 ```
 
-2. แก้เฉพาะไฟล์ที่เกี่ยวข้อง
-3. ทดสอบ local
+3. แก้เฉพาะไฟล์ที่เกี่ยวข้อง
+4. ทดสอบ local
 
 ```bash
 python3 -m http.server 8787
@@ -372,14 +380,25 @@ python3 -m http.server 8787
 http://127.0.0.1:8787/
 ```
 
-4. ตรวจว่ากราฟขึ้น ไม่มี error สำคัญ
-5. Commit และ push
+5. ตรวจว่ากราฟขึ้น ไม่มี error สำคัญ
+6. หลังแก้เสร็จ ให้อัปเดตไฟล์ KM นี้ด้วยเสมอ โดยสรุปว่าเปลี่ยนอะไร กระทบไฟล์ไหน วิธีรันเปลี่ยนหรือไม่ และมีข้อควรระวังใหม่หรือไม่
+7. Commit และ push
 
 ```bash
-git add index.html
+git add index.html KM_Rayong_Rainfall_Dashboard.md
 git commit -m "Describe change"
 git push origin main
 ```
+
+## Required KM Update Rule
+
+ตั้งแต่งานถัดไปเป็นต้นไป:
+
+- ก่อนเริ่มแก้ไขหรือปรับปรุง project นี้ ต้องอ่าน `KM_Rayong_Rainfall_Dashboard.md` ก่อนเสมอ
+- หลังแก้ไขเสร็จ ต้องอัปเดต KM ให้ตรงกับสิ่งที่เปลี่ยนจริง
+- ถ้ามีการเปลี่ยน path, command, workflow, data source, calculation logic, output, หรือ deployment process ต้องบันทึกไว้ใน KM
+- ถ้าเป็นการแก้เล็กน้อยด้าน UI ให้บันทึกในหัวข้อ recent changes หรือ notes อย่างย่อ
+- Commit ที่เกี่ยวกับการปรับปรุง project ควรรวม KM update ไปด้วย ยกเว้นเป็น hotfix ฉุกเฉินที่ไม่มีผลต่อวิธีใช้งานหรือ knowledge
 
 ## Future Improvement Ideas
 
