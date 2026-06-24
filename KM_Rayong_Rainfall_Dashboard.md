@@ -4,7 +4,7 @@
 
 ## Project Location
 
-- Local folder: `/Users/puschark/Documents/Forecasting water/rayong-rainfall-dashboard-pages`
+- Local working folder in OneDrive: `/Users/puschark/Library/CloudStorage/OneDrive-TheSiamCementPublicCompanyLimited/Business Continuity & Resilience - SCGC-BC and R Information - BC and R Information/2026/BCR Data Hub/Water Rayong/Rain/rayong-rainfall-dashboard-pages`
 - GitHub repository: `https://github.com/pabank10-png/rayong-rainfall-dashboard`
 - GitHub Pages URL: `https://pabank10-png.github.io/rayong-rainfall-dashboard/`
 - Main dashboard file: `index.html`
@@ -183,15 +183,117 @@ Workflow ทำงานดังนี้:
 5. รอให้ run สำเร็จ
 6. เปิด GitHub Pages URL แล้ว refresh
 
-ผ่านเครื่อง local:
+ผ่านเครื่อง local จาก OneDrive folder:
 
 ```bash
-cd "/Users/puschark/Documents/Forecasting water/rayong-rainfall-dashboard-pages"
+cd "/Users/puschark/Library/CloudStorage/OneDrive-TheSiamCementPublicCompanyLimited/Business Continuity & Resilience - SCGC-BC and R Information - BC and R Information/2026/BCR Data Hub/Water Rayong/Rain/rayong-rainfall-dashboard-pages"
 python3 scripts/update_dashboard.py
 git add index.html
 git commit -m "Update rainfall dashboard data"
 git push origin main
 ```
+
+## Standard Local Run Steps
+
+ใช้ขั้นตอนนี้เมื่อต้องการทดสอบบนเครื่องก่อน push ขึ้น GitHub
+
+1. เข้า folder project ใน OneDrive
+
+```bash
+cd "/Users/puschark/Library/CloudStorage/OneDrive-TheSiamCementPublicCompanyLimited/Business Continuity & Resilience - SCGC-BC and R Information - BC and R Information/2026/BCR Data Hub/Water Rayong/Rain/rayong-rainfall-dashboard-pages"
+```
+
+2. เช็กสถานะ git
+
+```bash
+git status --short
+```
+
+3. ดึงข้อมูลรายเดือนล่าสุดจาก HII แล้ว update `index.html`
+
+```bash
+python3 scripts/update_dashboard.py
+```
+
+4. เปิด local web server
+
+```bash
+python3 -m http.server 8787
+```
+
+5. เปิดเว็บ local ใน browser
+
+```text
+http://127.0.0.1:8787/
+```
+
+6. ตรวจหน้าเว็บ
+
+- Header ต้องขึ้น `Water Rainfall RY Dashboard`
+- Tab summary ต้องเลือก `3 อ่างฯ` / `อ่างประแสร์` ได้
+- กราฟรายเดือนและรายวันต้องแสดงผล
+- หน้า `ฝนรายวัน` ต้องมี badge `ข้อมูลล่าสุดถึงวันที่ ...`
+- ตรวจว่าไม่มี error สำคัญใน browser console
+
+7. ถ้าต้องการหยุด local server ให้กลับไปที่ Terminal แล้วกด
+
+```text
+Control + C
+```
+
+## Standard GitHub Publish Steps
+
+ใช้หลังจากทดสอบ local แล้วและต้องการส่งขึ้นเว็บจริง
+
+1. ดูไฟล์ที่เปลี่ยน
+
+```bash
+git status --short
+git diff --stat
+```
+
+2. Stage เฉพาะไฟล์ที่ต้องการ
+
+```bash
+git add index.html
+```
+
+ถ้ามีการแก้ KM ด้วย:
+
+```bash
+git add KM_Rayong_Rainfall_Dashboard.md
+```
+
+3. Commit
+
+```bash
+git commit -m "Update rainfall dashboard"
+```
+
+4. Push
+
+```bash
+git push origin main
+```
+
+5. เปิดเว็บจริง
+
+```text
+https://pabank10-png.github.io/rayong-rainfall-dashboard/
+```
+
+6. ถ้าเว็บยังไม่เปลี่ยนทันที ให้รอ GitHub Pages deploy สักครู่ แล้ว refresh หรือ hard refresh
+
+## Manual GitHub Workflow Run
+
+ใช้เมื่อไม่ต้องการรัน Python บนเครื่อง local
+
+1. เปิด GitHub repo: `https://github.com/pabank10-png/rayong-rainfall-dashboard`
+2. ไปที่ tab `Actions`
+3. เลือก workflow `Update Rainfall Dashboard`
+4. กด `Run workflow`
+5. รอให้ run สำเร็จ
+6. เปิด GitHub Pages URL และ refresh
 
 ## How to Edit Web Design
 
